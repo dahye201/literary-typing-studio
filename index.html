@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Literary Typing Studio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Special+Elite&family=Playfair+Display:ital,wght@0,400;1,400&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+<style>
+/* ── RESET & ROOT ── */
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#1e1c18;--bg2:#252320;
+  --cr:#ede8da;--cr3:#cec6b4;
+  --mc:#c4bca8;--mc2:#b8b09c;--mc3:#a8a08c;
+  --kbd:#1c1a16;--key:#2a2824;--kb:#424038;
+  --tx:#c8c0a8;--t2:rgba(200,192,168,.62);--t3:rgba(200,192,168,.34);--t4:rgba(200,192,168,.13);
+  --ink:#1c1208;--id:rgba(28,18,8,.12);
+  --bd:rgba(200,192,168,.18);--b2:rgba(200,192,168,.48);
+  --gld:#c8a870;--gd:rgba(200,168,112,.3);
+  --grn:#7ab880;--grd:rgba(122,184,128,.28);
+  --red:#d07070;--rd:rgba(208,112,112,.3);
+  --E:'Special Elite',monospace;--P:'Playfair Display',serif;--M:'Courier Prime',monospace;
+}
+html,body{background:var(--bg);min-height:100vh;font-family:var(--E);color:var(--tx)}
+.app{min-height:100vh;display:flex;flex-direction:column}
+
+/* ── TOPBAR ── */
+.top{display:flex;align-items:center;justify-content:space-between;padding:13px 28px;border-bottom:1px solid var(--bd);flex-shrink:0}
+.logo{font-family:var(--E);font-size:12px;letter-spacing:.28em;text-transform:uppercase;color:var(--tx);background:none;border:none;cursor:pointer;padding:0}
+.tnav{display:flex;align-items:center;gap:8px}
+.tbtn{font-family:var(--E);font-size:10px;letter-spacing:.15em;text-transform:uppercase;color:var(--t2);background:none;border:1px solid var(--bd);padding:5px 13px;cursor:pointer;transition:all .14s}
+.tbtn:hover{color:var(--tx);border-color:var(--b2)}
+.tbtn.g{color:var(--gld);border-color:var(--gd)}
+.tbtn.g:hover{border-color:var(--gld);background:rgba(200,168,112,.06)}
+
+/* ── SCREENS ── */
+.scr{display:none;flex-direction:column;flex:1}
+.scr.on{display:flex}
+
+/* ── LIBRARY ── */
+.lb{max-width:800px;width:100%;margin:0 auto;padding:32px 28px 0;flex:1}
+.sw{position:relative;margin-bottom:18px}
+.si{width:100%;background:transparent;border:1px solid var(--bd);font-family:var(--E);font-size:12px;letter-spacing:.1em;color:var(--tx);padding:10px 42px 10px 14px;outline:none;transition:border-color .14s}
+.si:focus{border-color:var(--b2)}
+.si::placeholder{color:var(--t4)}
+.sico{position:absolute;right:0;top:0;bottom:0;width:42px;display:flex;align-items:center;justify-content:center;pointer-events:none;color:var(--t3)}
+.acd{position:absolute;top:100%;left:0;right:0;z-index:200;background:var(--bg2);border:1px solid var(--b2);border-top:none;display:none}
+.acd.open{display:block}
+.acr{font-family:var(--E);font-size:11px;color:var(--t2);padding:9px 14px;cursor:pointer;display:flex;gap:10px;border-bottom:1px solid var(--bd)}
+.acr:last-child{border-bottom:none}.acr:hover,.acr.hl{background:rgba(200,192,168,.07);color:var(--tx)}
+.ach{color:var(--gld)}.aca{font-size:9px;color:var(--t3);margin-left:auto}
+.fbr{display:flex;align-items:center;gap:5px;margin-bottom:16px;flex-wrap:wrap}
+.ft{font-family:var(--E);font-size:9px;letter-spacing:.17em;text-transform:uppercase;color:var(--t3);border:1px solid var(--bd);padding:4px 11px;cursor:pointer;background:transparent;transition:all .13s}
+.ft:hover{color:var(--t2);border-color:var(--b2)}.ft.on{color:var(--tx);border-color:var(--b2);background:rgba(200,192,168,.08)}
+.fct{font-family:var(--E);font-size:9px;color:var(--t3);margin-left:auto}
+.bkl{display:flex;flex-direction:column;gap:1px;margin-bottom:16px}
+.bkr{display:flex;align-items:stretch;border:1px solid var(--bd);cursor:pointer;transition:border-color .14s,background .14s}
+.bkr:hover{border-color:var(--b2);background:rgba(200,192,168,.04)}
+.bkr.lk{cursor:default}.bkr.lk:hover{border-color:var(--bd);background:transparent}
+.bkn{width:42px;flex-shrink:0;display:flex;align-items:center;justify-content:center;border-right:1px solid var(--bd);font-size:9px;color:var(--t3)}
+.bkb{flex:1;padding:13px 16px}
+.bkti{font-family:var(--P);font-size:15px;font-style:italic;color:var(--tx);margin-bottom:3px}
+.bkme{font-family:var(--E);font-size:9px;color:var(--t3);margin-bottom:5px}
+.bkpv{font-family:var(--M);font-size:11px;color:var(--t3);line-height:1.6;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.bksd{width:68px;flex-shrink:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;border-left:1px solid var(--bd)}
+.bkyr{font-size:9px;color:var(--t3)}
+.bkf{font-family:var(--E);font-size:7px;letter-spacing:.1em;text-transform:uppercase;color:var(--grn);border:1px solid var(--grd);padding:2px 6px}
+.bkp{font-family:var(--E);font-size:7px;letter-spacing:.1em;text-transform:uppercase;color:var(--gld);border:1px solid var(--gd);padding:2px 6px}
+.bkar{font-family:var(--P);font-size:15px;font-style:italic;color:var(--t2)}
+.bkr:hover:not(.lk) .bkar{color:var(--tx)}
+.pgr{display:flex;align-items:center;gap:4px;justify-content:center;padding:12px 0}
+.pgb{font-family:var(--E);font-size:10px;color:var(--t2);border:1px solid var(--bd);background:transparent;width:32px;height:32px;cursor:pointer;transition:all .13s;display:flex;align-items:center;justify-content:center}
+.pgb:hover:not(.off){color:var(--tx);border-color:var(--b2)}.pgb.on{color:var(--tx);border-color:var(--b2);background:rgba(200,192,168,.08)}.pgb.off{opacity:.22;cursor:default}
+.lft{max-width:800px;width:100%;margin:8px auto 0;padding:14px 28px 24px;display:flex;align-items:center;gap:16px;border-top:1px solid var(--bd)}
+.fl{font-family:var(--E);font-size:9px;letter-spacing:.15em;text-transform:uppercase;color:var(--t3);background:none;border:none;cursor:pointer;padding:0;text-decoration:none;transition:color .14s}
+.fl:hover{color:var(--t2)}.fl.g{color:var(--gld)}.fl.g:hover{color:#d8b880}
+.fdot{width:2px;height:2px;border-radius:50%;background:var(--bd)}
+
+/* ── TYPEWRITER SCREEN ── */
+.tws{display:flex;align-items:center;padding:9px 28px;border-bottom:1px solid var(--bd);flex-shrink:0}
+.sb{display:flex;flex-direction:column;margin-right:22px}
+.sv{display:block;font-family:var(--E);font-size:22px;letter-spacing:.04em;color:var(--tx);line-height:1;margin-bottom:2px}
+.sl{font-family:var(--E);font-size:8px;letter-spacing:.26em;text-transform:uppercase;color:var(--t3)}
+.sep{width:1px;height:30px;background:var(--bd);margin-right:22px}
+.sr{margin-left:auto;display:flex;align-items:center;gap:8px}
+.ip{font-family:var(--E);font-size:8px;letter-spacing:.18em;text-transform:uppercase;color:var(--t3);opacity:0;transition:opacity .3s;display:flex;align-items:center;gap:4px}
+.ip.on{opacity:1}
+.idot{width:4px;height:4px;border-radius:50%;background:var(--t3);animation:pd 1.4s ease-in-out infinite}
+@keyframes pd{0%,100%{opacity:.2}50%{opacity:.8}}
+.snd{font-family:var(--E);font-size:9px;letter-spacing:.13em;text-transform:uppercase;color:var(--t2);border:1px solid var(--bd);padding:4px 11px;cursor:pointer;background:transparent;transition:all .13s}
+.snd.on{color:var(--tx);border-color:var(--b2);background:rgba(200,192,168,.06)}
+
+/* page nav */
+.page-nav{width:100%;max-width:900px;margin:0 auto;padding:8px 28px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;border-bottom:1px solid var(--bd)}
+.pnav-btn{font-family:var(--E);font-size:9px;letter-spacing:.15em;text-transform:uppercase;color:var(--t2);border:1px solid var(--bd);background:transparent;padding:4px 12px;cursor:pointer;transition:all .13s;display:flex;align-items:center;gap:6px}
+.pnav-btn:hover:not(:disabled){color:var(--tx);border-color:var(--b2)}
+.pnav-btn:disabled{opacity:.22;cursor:default}
+.pnav-info{font-family:var(--E);font-size:9px;letter-spacing:.15em;text-transform:uppercase;color:var(--t3)}
+
+/* machine */
+.mw{width:100%;max-width:900px;margin:0 auto;padding:8px 28px 0;flex-shrink:0}
+.mf{background:var(--mc);border-radius:14px 14px 6px 6px;border:2px solid var(--mc3);border-bottom:5px solid var(--mc3);position:relative;overflow:hidden}
+.mf::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:rgba(255,255,255,.2);border-radius:14px 14px 0 0;pointer-events:none}
+.pa{background:var(--mc2);margin:9px 13px 0;border-radius:3px 3px 0 0;padding:3px 9px 0}
+.pp{background:var(--cr);background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3CfeComponentTransfer%3E%3CfeFuncA type='linear' slope='0.045'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)'/%3E%3C/svg%3E");width:100%;min-height:220px;padding:18px 38px 20px;position:relative;cursor:text;border-left:1px solid var(--cr3);border-right:1px solid var(--cr3)}
+.pp::before{content:'';position:absolute;left:34px;top:0;bottom:0;width:1px;background:rgba(180,60,60,.09)}
+.pp::after{content:'';position:absolute;top:0;right:0;width:0;height:0;border:solid transparent;border-width:0 18px 18px 0;border-right-color:#1e1c18}
+.ph{display:flex;justify-content:space-between;align-items:baseline;padding-bottom:7px;margin-bottom:9px;border-bottom:1px solid rgba(28,18,8,.35);position:relative;z-index:1}
+.phx{font-family:var(--E);font-size:8px;letter-spacing:.12em;text-transform:uppercase;color:rgba(28,18,8,.3)}
+.pm{margin-bottom:10px;position:relative;z-index:1}
+.ptt{font-family:var(--E);font-size:8px;letter-spacing:.2em;text-transform:uppercase;color:rgba(28,18,8,.4);margin-bottom:2px}
+.pdv{height:1px;background:rgba(28,18,8,.1);margin-bottom:2px}
+.pau{font-family:var(--P);font-size:9px;font-style:italic;color:rgba(28,18,8,.28)}
+
+/* ═══════════════════════════════════════
+   TYPING AREA — THE KEY PART
+   Invisible textarea overlaid on styled div.
+   NO outline, NO box-shadow on either element.
+═══════════════════════════════════════ */
+.typing-wrap{position:relative;z-index:1;min-height:56px}
+
+/* Styled display (what user sees) */
+.typing-display{
+  font-family:var(--M);font-size:13.5px;line-height:27px;
+  letter-spacing:.022em;white-space:pre-wrap;word-break:break-word;
+  min-height:56px;pointer-events:none;user-select:none;
+}
+
+/* Invisible input capture layer */
+.typing-input{
+  position:absolute;top:0;left:0;
+  width:100%;height:100%;min-height:56px;
+  opacity:0;
+  background:transparent;
+  border:none !important;
+  outline:none !important;
+  box-shadow:none !important;
+  -webkit-appearance:none;
+  resize:none;
+  cursor:text;
+  z-index:10;
+  font-size:16px; /* prevents iOS zoom */
+  color:transparent;
+  caret-color:transparent;
+  padding:0;
+  margin:0;
+}
+.typing-input:focus,
+.typing-input:active {
+  outline:none !important;
+  box-shadow:none !important;
+  border:none !important;
+}
+
+/* Char color states */
+.ck{color:var(--ink)}
+.ce{color:var(--red);text-decoration:underline wavy rgba(208,112,112,.55)}
+.cd{color:var(--id)}
+.cc{color:var(--id);position:relative;display:inline}
+.cc::before{
+  content:'';position:absolute;left:0;top:3px;bottom:3px;
+  width:1.5px;background:var(--ink);
+  animation:blink .9s steps(1) infinite;
+}
+@keyframes blink{0%,49%{opacity:1}50%,100%{opacity:0}}
+
+/* progress */
+.prw{margin:2px 13px 0;height:3px;background:rgba(200,192,168,.1)}
+.prf{height:100%;background:rgba(200,192,168,.28);transition:width .2s;width:0}
+
+/* platen */
+.pls{background:var(--mc2);margin:0 13px;padding:4px 0 6px;position:relative}
+.plr{height:24px;background:linear-gradient(180deg,#3a3e42,#2c3034 55%,#1e2226);border-radius:12px;margin:0 11px;position:relative;box-shadow:0 3px 8px rgba(0,0,0,.5)}
+.plr::before{content:'';position:absolute;top:3px;left:11%;right:11%;height:2px;background:rgba(255,255,255,.05);border-radius:1px}
+.ctr{position:absolute;top:50%;left:10px;right:10px;transform:translateY(-50%);height:4px;background:#141618;border-radius:2px}
+.car{position:absolute;top:50%;width:50px;height:26px;background:linear-gradient(180deg,#50565c,#30363c);border-radius:5px;transform:translateY(-50%);border:1px solid #5e6470;transition:left .06s linear;box-shadow:0 2px 5px rgba(0,0,0,.5)}
+.car::after{content:'';position:absolute;bottom:-10px;left:50%;transform:translateX(-50%);width:7px;height:10px;background:#1e2226;border-radius:0 0 3px 3px}
+.pk{position:absolute;top:50%;transform:translateY(-50%);width:32px;height:32px;border-radius:50%;background:radial-gradient(circle at 36% 32%,#8a8,#555);border:2px solid #444;box-shadow:0 2px 5px rgba(0,0,0,.4);cursor:pointer;transition:transform .15s;z-index:5}
+.pk:hover{transform:translateY(-50%) rotate(45deg)}.pk.L{left:-5px}.pk.R{right:-5px}
+.pk::after{content:'';position:absolute;top:5px;left:5px;width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.1)}
+.fan{background:var(--mc);margin:0 13px;height:52px;display:flex;align-items:flex-end;justify-content:center;overflow:hidden;position:relative}
+.fnb{width:148px;height:74px;background:#1a1816;border-radius:74px 74px 0 0;position:absolute;bottom:0;border:2px solid #2a2824;border-bottom:none;overflow:hidden}
+.fns{position:absolute;inset:0;border-radius:inherit;background:repeating-conic-gradient(from -90deg at 50% 100%,#1e1c18 0deg 3deg,#141210 3deg 6deg)}
+.fnr{position:absolute;top:7px;left:7px;right:7px;bottom:0;border-radius:67px 67px 0 0;border:1px solid #2e2c28;border-bottom:none}
+.mft{background:var(--mc2);margin:0 13px;border-radius:0 0 6px 6px;height:11px;border-bottom:3px solid var(--mc3)}
+
+/* keyboard — no focus ring at all */
+.kbw{width:100%;max-width:900px;margin:0 auto;padding:0 28px 16px;flex-shrink:0}
+.kb{background:var(--kbd);border-radius:0 0 12px 12px;padding:10px 16px 14px;border:1px solid rgba(0,0,0,.5);border-top:none}
+.kr{display:flex;gap:3px;margin-bottom:3px;justify-content:center}
+.k{height:38px;flex:1;min-width:24px;max-width:48px;background:var(--key);border-radius:6px 6px 3px 3px;border:1px solid var(--kb);border-bottom:4px solid #0e0c08;display:flex;align-items:center;justify-content:center;font-family:var(--E);font-size:10px;color:var(--t2);user-select:none;transition:border-bottom .04s,transform .04s,color .04s,background .04s;position:relative;outline:none;cursor:default}
+.k::before{content:'';position:absolute;top:2px;left:2px;right:2px;height:4px;background:rgba(255,255,255,.03);border-radius:3px 3px 0 0}
+.k.hit{border-bottom:1px solid #0e0c08;transform:translateY(3px);color:#c0b888;background:#222018}
+.k.err-hit{border-bottom:1px solid #0e0c08;transform:translateY(3px);color:var(--red);background:#2a1414}
+.kw{max-width:72px;min-width:52px}.ksp{max-width:260px;min-width:180px;flex:4}
+
+.twf{width:100%;max-width:900px;margin:0 auto;padding:8px 28px 12px;flex-shrink:0}
+.hint{font-family:var(--E);font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:var(--t2);cursor:pointer}
+
+/* ── COMPLETION OVERLAY ── */
+.done-ov{display:none;position:fixed;inset:0;z-index:500;background:rgba(14,12,8,.82);align-items:center;justify-content:center;padding:20px}
+.done-ov.show{display:flex;animation:dofade .3s ease-out}
+@keyframes dofade{from{opacity:0}to{opacity:1}}
+.done-card{background:var(--bg2);border:1px solid var(--b2);padding:48px 52px;max-width:540px;width:100%;text-align:center;position:relative;animation:dorise .3s ease-out}
+@keyframes dorise{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+.done-card::before{content:'';position:absolute;top:0;left:52px;right:52px;height:1px;background:var(--gld);opacity:.35}
+.done-ey{font-family:var(--E);font-size:8px;letter-spacing:.32em;text-transform:uppercase;color:var(--t3);margin-bottom:16px;display:block}
+.done-ti{font-family:var(--P);font-size:32px;font-style:italic;color:var(--tx);margin-bottom:6px}
+.done-sr{display:flex;align-items:center;justify-content:center;margin:24px 0 28px;border:1px solid var(--bd)}
+.done-sc{flex:1;padding:14px 10px;border-right:1px solid var(--bd);text-align:center}
+.done-sc:last-child{border-right:none}
+.done-sv{font-family:var(--E);font-size:20px;letter-spacing:.04em;color:var(--tx);display:block;margin-bottom:3px}
+.done-sl{font-family:var(--E);font-size:7px;letter-spacing:.26em;text-transform:uppercase;color:var(--t3)}
+.done-bar-w{height:2px;background:var(--bd);margin:0 52px 28px;border-radius:1px}
+.done-bar-f{height:100%;background:var(--gld);border-radius:1px;transition:width .6s ease-out;width:0}
+.done-acts{display:flex;gap:8px;justify-content:center}
+.done-pri{font-family:var(--E);font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:var(--bg);background:var(--tx);border:1px solid var(--tx);padding:10px 24px;cursor:pointer;transition:all .15s}
+.done-pri:hover{background:var(--gld);border-color:var(--gld)}
+.done-sec{font-family:var(--E);font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:var(--t2);background:transparent;border:1px solid var(--bd);padding:10px 24px;cursor:pointer;transition:all .15s}
+.done-sec:hover{color:var(--tx);border-color:var(--b2)}
+.done-qt{margin-top:24px;padding-top:20px;border-top:1px solid var(--bd);font-family:var(--P);font-size:12px;font-style:italic;color:var(--t3);line-height:1.7}
+
+/* ── MY PROGRESS ── */
+.mp{max-width:800px;width:100%;margin:0 auto;padding:32px 28px;flex:1}
+.mph{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:24px}
+.mpt{font-family:var(--P);font-size:20px;font-style:italic;color:var(--tx)}
+.mps{font-family:var(--E);font-size:8px;letter-spacing:.2em;text-transform:uppercase;color:var(--t3)}
+.mpc{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-bottom:24px}
+.mpci{border:1px solid var(--bd);padding:13px 14px}
+.mpcv{font-family:var(--E);font-size:20px;letter-spacing:.04em;color:var(--tx);margin-bottom:3px}
+.mpcl{font-family:var(--E);font-size:7px;letter-spacing:.22em;text-transform:uppercase;color:var(--t3)}
+.ssl{font-family:var(--E);font-size:8px;letter-spacing:.28em;text-transform:uppercase;color:var(--t3);margin-bottom:10px}
+.ssl2{display:flex;flex-direction:column;gap:1px}
+.ssr{display:flex;align-items:stretch;border:1px solid var(--bd);cursor:pointer;transition:border-color .14s,background .14s}
+.ssr:hover{border-color:var(--b2);background:rgba(200,192,168,.04)}
+.ssb{flex:1;padding:11px 14px}
+.sst{font-family:var(--P);font-size:14px;font-style:italic;color:var(--tx);margin-bottom:2px}
+.ssd{font-family:var(--E);font-size:8px;color:var(--t3)}
+.sss{display:flex;align-items:center;gap:14px;padding:11px 14px;border-left:1px solid var(--bd)}
+.ssv{font-family:var(--E);font-size:13px;color:var(--tx);display:block}
+.ssl3{font-family:var(--E);font-size:7px;letter-spacing:.18em;text-transform:uppercase;color:var(--t3)}
+.nlo{text-align:center;padding:56px 28px}
+.nlot{font-family:var(--P);font-size:20px;font-style:italic;color:var(--tx);margin-bottom:10px}
+.nlos{font-family:var(--E);font-size:9px;letter-spacing:.15em;text-transform:uppercase;color:var(--t3);margin-bottom:22px}
+
+/* ── OVERLAYS ── */
+.ov{position:fixed;inset:0;z-index:9999;background:rgba(10,9,6,.88);display:none;align-items:center;justify-content:center;padding:20px;overflow-y:auto}
+.ov.open{display:flex}
+.mb{background:var(--bg2);border:1px solid var(--b2);padding:40px 44px;max-width:400px;width:100%;position:relative;text-align:center;animation:mf .18s ease-out;margin:auto}
+@keyframes mf{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.mx{position:absolute;top:12px;right:14px;font-family:var(--E);font-size:9px;color:var(--t3);background:none;border:none;cursor:pointer;transition:color .14s}
+.mx:hover{color:var(--tx)}
+.mh{font-family:var(--E);font-size:11px;letter-spacing:.26em;text-transform:uppercase;color:var(--tx);display:block;margin-bottom:5px}
+.ms{font-family:var(--P);font-size:12px;font-style:italic;color:var(--t3);margin-bottom:22px}
+.soc{width:100%;display:flex;align-items:center;gap:11px;padding:11px 14px;margin-bottom:7px;background:transparent;border:1px solid var(--bd);cursor:pointer;font-family:var(--E);font-size:9px;letter-spacing:.13em;text-transform:uppercase;color:var(--t2);transition:all .15s}
+.soc:hover{border-color:var(--b2);color:var(--tx)}.soc svg{flex-shrink:0}
+.mdv{display:flex;align-items:center;gap:9px;margin:10px 0}
+.mdvl{flex:1;height:1px;background:var(--bd)}.mdvt{font-family:var(--E);font-size:7px;letter-spacing:.22em;text-transform:uppercase;color:var(--t3)}
+.mem{width:100%;padding:11px 14px;background:transparent;border:1px solid var(--b2);font-family:var(--E);font-size:9px;letter-spacing:.15em;text-transform:uppercase;color:var(--tx);cursor:pointer;transition:all .15s}
+.mem:hover{background:rgba(200,192,168,.06)}
+.cof{font-family:var(--M);font-size:12px;color:var(--t2);line-height:1.75;margin-bottom:22px;text-align:left}
+.cta{display:block;width:100%;padding:12px 18px;background:rgba(200,168,112,.1);border:1px solid rgba(200,168,112,.4);font-family:var(--E);font-size:10px;letter-spacing:.17em;text-transform:uppercase;color:var(--gld);cursor:pointer;transition:all .15s;text-decoration:none;text-align:center}
+.cta:hover{background:rgba(200,168,112,.18);border-color:var(--gld)}
+.plg{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:14px}
+.plc{border:1px solid var(--bd);padding:16px 12px;text-align:center}.plc.ft{border-color:rgba(200,168,112,.4)}
+.pln_{font-family:var(--E);font-size:8px;letter-spacing:.22em;text-transform:uppercase;color:var(--t3);margin-bottom:7px}
+.plp_{font-family:var(--P);font-size:20px;font-style:italic;color:var(--tx);margin-bottom:5px}
+.plp_ small{font-size:10px;font-style:normal;color:var(--t3)}
+.plf_{font-family:var(--E);font-size:8px;color:var(--t3);line-height:2}
+.plb_{display:block;width:100%;padding:8px 12px;border:1px solid var(--b2);font-family:var(--E);font-size:9px;letter-spacing:.13em;text-transform:uppercase;color:var(--t2);background:transparent;cursor:pointer;transition:all .15s;margin-top:10px}
+.plb_:hover{color:var(--tx)}.plb_.ft{color:var(--gld);border-color:rgba(200,168,112,.4)}.plb_.ft:hover{background:rgba(200,168,112,.08)}
+.pln2{font-family:var(--E);font-size:7px;color:var(--t3)}
+.docmb{max-width:560px;max-height:78vh;overflow-y:auto;text-align:left}
+.doch{font-family:var(--P);font-size:18px;font-style:italic;color:var(--tx);margin-bottom:5px}
+.docs_{font-family:var(--E);font-size:8px;letter-spacing:.2em;text-transform:uppercase;color:var(--t3);margin-bottom:24px}
+.doc-s{margin-bottom:19px}.doc-s h3{font-family:var(--E);font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--t2);margin-bottom:7px}
+.doc-s p{font-family:var(--M);font-size:12px;color:var(--t2);line-height:1.8}
+.det-mb{max-width:480px;text-align:left}
+.dett{font-family:var(--P);font-size:18px;font-style:italic;color:var(--tx);margin-bottom:3px}
+.detm{font-family:var(--E);font-size:8px;letter-spacing:.13em;text-transform:uppercase;color:var(--t3);margin-bottom:17px}
+.detg{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-bottom:17px}
+.detc{border:1px solid var(--bd);padding:9px 10px;text-align:center}
+.detv{font-family:var(--E);font-size:16px;color:var(--tx);display:block;margin-bottom:2px}
+.detl{font-family:var(--E);font-size:7px;letter-spacing:.17em;text-transform:uppercase;color:var(--t3)}
+.dettx{font-family:var(--M);font-size:11px;color:var(--t2);line-height:1.75;padding:13px;border:1px solid var(--bd);max-height:160px;overflow-y:auto;margin-bottom:13px}
+.deta{display:flex;gap:7px}
+.detb{font-family:var(--E);font-size:9px;letter-spacing:.13em;text-transform:uppercase;color:var(--t2);background:none;border:1px solid var(--bd);padding:6px 16px;cursor:pointer}
+.detb:hover{color:var(--tx)}
+.detd{font-family:var(--E);font-size:9px;letter-spacing:.13em;text-transform:uppercase;color:var(--red);background:none;border:1px solid var(--rd);padding:6px 14px;cursor:pointer;margin-left:auto}
+.detd:hover{border-color:var(--red)}
+</style>
+</head>
+<body>
+<div class="app">
+
+<header class="top">
+  <button class="logo" id="bLogo">Literary Typing Studio</button>
+  <nav class="tnav">
+    <button class="tbtn" id="bLib">Library</button>
+    <button class="tbtn" id="bProg">My Progress</button>
+    <button class="tbtn g" id="bCof">Support</button>
+    <button class="tbtn" id="bSI">Sign In</button>
+  </nav>
+</header>
+
+<!-- LIBRARY -->
+<div class="scr on" id="sLib">
+  <div class="lb">
+    <div class="sw">
+      <input class="si" id="si" type="text" placeholder="Search by title or author...">
+      <span class="sico"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></span>
+      <div class="acd" id="acd"></div>
+    </div>
+    <div class="fbr">
+      <button class="ft on" data-f="all">All</button>
+      <button class="ft" data-f="free">Free</button>
+      <button class="ft" data-f="premium">Premium</button>
+      <button class="ft" data-f="novel">Novel</button>
+      <button class="ft" data-f="short">Short Story</button>
+      <span class="fct" id="fct"></span>
+    </div>
+    <div class="bkl" id="bkl"></div>
+    <div class="pgr" id="pgr"></div>
+  </div>
+  <div style="flex:1"></div>
+  <footer class="lft">
+    <button class="fl" id="bAbout">About</button>
+    <div class="fdot"></div>
+    <button class="fl" id="bPriv">Privacy Policy</button>
+    <div class="fdot"></div>
+    <a class="fl g" href="#" id="bFootCof">Buy Me a Coffee</a>
+  </footer>
+</div>
+
+<!-- TYPEWRITER -->
+<div class="scr" id="sTw">
+  <div class="tws">
+    <div class="sb"><span class="sv" id="stW">??</span><span class="sl">WPM</span></div>
+    <div class="sep"></div>
+    <div class="sb"><span class="sv" id="stA">??</span><span class="sl">ACC</span></div>
+    <div class="sep"></div>
+    <div class="sb"><span class="sv" id="stC">0</span><span class="sl">CHARS</span></div>
+    <div class="sep"></div>
+    <div class="sb"><span class="sv" id="stT">0:00</span><span class="sl">TIME</span></div>
+    <div class="sr">
+      <div class="ip" id="idlePill"><span class="idot"></span>Paused</div>
+      <button class="snd on" id="sndBtn">Sound On</button>
+    </div>
+  </div>
+
+  <div class="page-nav">
+    <button class="pnav-btn" id="prevPg" disabled>
+      <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>Prev
+    </button>
+    <div class="pnav-info" id="pgInfo">Page 1 of 1</div>
+    <button class="pnav-btn" id="nextPg">
+      Next<svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+    </button>
+  </div>
+
+  <div class="mw"><div class="mf">
+    <div class="pa"><div class="pp" id="ppEl">
+      <div class="ph"><span class="phx">Literary Typing Studio</span><span class="phx" id="pPgI"></span></div>
+      <div class="pm"><div class="ptt" id="pTi"></div><div class="pdv"></div><div class="pau" id="pAu"></div></div>
+      <!-- TYPING AREA -->
+      <div class="typing-wrap" id="typingWrap">
+        <div class="typing-display" id="typDisp"></div>
+        <textarea
+          id="typInput"
+          class="typing-input"
+          autocomplete="off"
+          autocorrect="off"
+          autocapitalize="off"
+          spellcheck="false"
+        ></textarea>
+      </div>
+    </div></div>
+    <div class="prw"><div class="prf" id="prf"></div></div>
+    <div class="pls"><div class="plr">
+      <div class="pk L"></div>
+      <div class="ctr"><div class="car" id="car"></div></div>
+      <div class="pk R"></div>
+    </div></div>
+    <div class="fan"><div class="fnb"><div class="fns"></div><div class="fnr"></div></div></div>
+    <div class="mft"></div>
+  </div></div>
+
+  <div class="kbw"><div class="kb" id="kb">
+    <div class="kr" id="r0"></div><div class="kr" id="r1"></div>
+    <div class="kr" id="r2"></div><div class="kr" id="r3"></div>
+    <div class="kr" id="r4">
+      <div class="k kw" data-k="alt">Alt</div>
+      <div class="k kw" data-k="cmd">Cmd</div>
+      <div class="k ksp" data-k=" "></div>
+      <div class="k kw" data-k="cmd">Cmd</div>
+      <div class="k kw" data-k="alt">Alt</div>
+    </div>
+  </div></div>
+
+  <div class="twf"><div class="hint" id="hintEl">Click anywhere or start typing</div></div>
+</div>
+
+<!-- MY PROGRESS -->
+<div class="scr" id="sMy">
+  <div class="mp" id="mpC" style="display:none">
+    <div class="mph"><span class="mpt">My Progress</span><span class="mps" id="mpU"></span></div>
+    <div class="mpc">
+      <div class="mpci"><div class="mpcv" id="mpS">0</div><div class="mpcl">Sessions</div></div>
+      <div class="mpci"><div class="mpcv" id="mpW">--</div><div class="mpcl">Avg WPM</div></div>
+      <div class="mpci"><div class="mpcv" id="mpB">--</div><div class="mpcl">Best WPM</div></div>
+      <div class="mpci"><div class="mpcv" id="mpA">--</div><div class="mpcl">Avg Acc</div></div>
+    </div>
+    <div class="ssl">Recent Sessions</div>
+    <div class="ssl2" id="ssl2"></div>
+  </div>
+  <div class="nlo" id="nlo">
+    <div class="nlot">Sign in to track your progress</div>
+    <div class="nlos">Sessions, WPM history, accuracy over time</div>
+    <button class="tbtn" id="mySI" style="margin:0 auto;display:block">Sign In</button>
+  </div>
+</div>
+
+<!-- COMPLETION OVERLAY -->
+<div class="done-ov" id="doneOv">
+  <div class="done-card">
+    <span class="done-ey" id="doneEy"></span>
+    <div class="done-ti" id="doneTi"></div>
+    <div class="done-sr" id="doneSR"></div>
+    <div class="done-bar-w"><div class="done-bar-f" id="doneBarF"></div></div>
+    <div class="done-acts">
+      <button class="done-sec" id="doneLibBtn">Choose Another</button>
+      <button class="done-pri" id="doneRetypeBtn">Type Again</button>
+    </div>
+    <div class="done-qt" id="doneQt"></div>
+  </div>
+</div>
+
+<!-- LOGIN -->
+<div class="ov" id="ovL"><div class="mb">
+  <button class="mx" data-c="ovL">[close]</button>
+  <span class="mh">Literary Typing Studio</span>
+  <p class="ms">Sign in to save your progress</p>
+  <button class="soc" id="socG"><svg width="16" height="16" viewBox="0 0 18 18"><path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.875 2.684-6.615z"/><path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 0 0 9 18z"/><path fill="#FBBC05" d="M3.964 10.71A5.41 5.41 0 0 1 3.682 9c0-.593.102-1.17.282-1.71V4.958H.957A8.996 8.996 0 0 0 0 9c0 1.452.348 2.827.957 4.042l3.007-2.332z"/><path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 0 0 .957 4.958L3.964 7.29C4.672 5.163 6.656 3.58 9 3.58z"/></svg>Continue with Google</button>
+  <button class="soc" id="socA"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>Continue with Apple</button>
+  <button class="soc" id="socF"><svg width="16" height="16" viewBox="0 0 24 24" fill="#1877F2"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>Continue with Facebook</button>
+  <button class="soc" id="socX"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>Continue with X</button>
+  <div class="mdv"><div class="mdvl"></div><span class="mdvt">or</span><div class="mdvl"></div></div>
+  <button class="mem" id="socE">Continue with Email</button>
+</div></div>
+
+<!-- COFFEE -->
+<div class="ov" id="ovC"><div class="mb" style="border-color:rgba(200,168,112,.4)">
+  <button class="mx" data-c="ovC">[close]</button>
+  <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="var(--gld)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="display:block;margin:0 auto 14px"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>
+  <span class="mh" style="color:var(--gld)">Buy Me a Coffee</span>
+  <p class="ms">Keep the studio running</p>
+  <p class="cof">Enjoying the stories? Support the studio with a coffee.</p>
+  <a class="cta" href="https://buymeacoffee.com" target="_blank" rel="noopener">Buy me a coffee &rarr;</a>
+</div></div>
+
+<!-- PREMIUM -->
+<div class="ov" id="ovP"><div class="mb" style="max-width:440px">
+  <button class="mx" data-c="ovP">[close]</button>
+  <span class="mh">Unlock the Full Library</span>
+  <p class="ms">Continue beyond page 5</p>
+  <div class="plg">
+    <div class="plc"><div class="pln_">Free</div><div class="plp_">$0</div><div class="plf_">Pages 1&ndash;5<br>Basic stats<br>Sound effects</div><button class="plb_">Current Plan</button></div>
+    <div class="plc ft"><div class="pln_">Premium</div><div class="plp_">$4.99<small>/mo</small></div><div class="plf_">Unlimited pages<br>Progress history<br>No ads</div><button class="plb_ ft" id="premLogin">Get Premium</button></div>
+  </div>
+  <p class="pln2">7-day free trial &middot; Cancel anytime</p>
+</div></div>
+
+<!-- ABOUT -->
+<div class="ov" id="ovAb"><div class="mb docmb" style="text-align:left">
+  <button class="mx" data-c="ovAb">[close]</button>
+  <div class="doch">Literary Typing Studio</div>
+  <div class="docs_">About this service</div>
+  <div class="doc-s"><h3>What is this?</h3><p>Literary Typing Studio is a typing practice platform built around the opening passages of the world's greatest novels.</p></div>
+  <div class="doc-s"><h3>Why type literature?</h3><p>Typing a great sentence, letter by letter, is a form of close reading. You feel the rhythm and begin to understand why the sentence is the way it is.</p></div>
+  <div class="doc-s"><h3>Copyright</h3><p>All passages are from works published before 1928 and are in the public domain in the United States.</p></div>
+  <div class="doc-s"><h3>Contact</h3><p>hello@literarytyping.studio</p></div>
+</div></div>
+
+<!-- PRIVACY -->
+<div class="ov" id="ovPr"><div class="mb docmb" style="text-align:left">
+  <button class="mx" data-c="ovPr">[close]</button>
+  <div class="doch">Privacy Policy</div>
+  <div class="docs_">Last updated January 2025</div>
+  <div class="doc-s"><h3>What we collect</h3><p>When you sign in, we receive your name and email from the OAuth provider. We store typing session data: WPM, accuracy, duration, and which passage you typed.</p></div>
+  <div class="doc-s"><h3>How we use it</h3><p>Your data is used solely to provide the service. We do not sell your data.</p></div>
+  <div class="doc-s"><h3>Data deletion</h3><p>You may delete your account at any time. All data is permanently deleted within 30 days.</p></div>
+  <div class="doc-s"><h3>Contact</h3><p>privacy@literarytyping.studio</p></div>
+</div></div>
+
+<!-- SESSION DETAIL -->
+<div class="ov" id="ovD"><div class="mb det-mb">
+  <button class="mx" data-c="ovD">[close]</button>
+  <div class="dett" id="dT"></div><div class="detm" id="dM"></div>
+  <div class="detg">
+    <div class="detc"><span class="detv" id="dW">--</span><span class="detl">WPM</span></div>
+    <div class="detc"><span class="detv" id="dA">--</span><span class="detl">Acc</span></div>
+    <div class="detc"><span class="detv" id="dC">--</span><span class="detl">Chars</span></div>
+    <div class="detc"><span class="detv" id="dTm">--</span><span class="detl">Time</span></div>
+  </div>
+  <div class="dettx" id="dTx"></div>
+  <div class="deta">
+    <button class="detb" id="dRt">Retype</button>
+    <button class="detd" id="dDl">Delete</button>
+  </div>
+</div></div>
+
+</div><!-- .app -->
+<script src="app.js"></script>
+</body>
+</html>
