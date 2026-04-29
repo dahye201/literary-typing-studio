@@ -124,38 +124,30 @@ function cleanText(str) {
 /* ════════════════════════════════════════════════════════════
    BOOK DATA 변환 로직 (사장님 데이터 맞춤형)
 ════════════════════════════════════════════════════════════ */
+/* ════════════════════════════════════════════════════════════
+   BOOK DATA 연결 로직 (사장님 실제 데이터 구조 맞춤)
+════════════════════════════════════════════════════════════ */
 const PAGE_SIZE     = 700;   
 const FREE_CHAPTERS = 3;     
 
-// 1. data.js의 개별 챕터들을 하나의 'Pride and Prejudice' 책으로 묶어줍니다.
-const RAW_BOOKS = [{
-  id: "pride-and-prejudice",
-  title: "Pride and Prejudice",
-  author: "Jane Austen",
-  year: "1813",
-  genre: "novel",
-  // data.js에 있는 bookData를 챕터 배열로 변환
-  chapters: bookData.map(ch => ({
-    title: ch.title,
-    text: ch.content
-  }))
-}];
+// data.js에 선언된 bookData를 그대로 가져와서 사용합니다.
+const RAW_BOOKS = bookData; 
 
-/* 2. 실행 시점에 사용할 BOOKS 배열 생성 */
+/* 실행 시점에 사용할 BOOKS 배열 생성 */
 const BOOKS = RAW_BOOKS.map(b => {
   const chapters = (b.chapters || []).map((ch, ci) => {
-    const cleaned = cleanText(ch.text);
+    // 텍스트 정제 및 페이지 분할
+    const cleaned = cleanText(ch.content || ch.text || "");
     return {
       index:  ci,
       title:  ch.title || `Chapter ${ci + 1}`,
       text:   cleaned,
       pages:  splitPages(cleaned),
-      locked: ci >= FREE_CHAPTERS,   // 챕터 4부터 잠금
+      locked: ci >= FREE_CHAPTERS,   // 0, 1, 2번 인덱스(1, 2, 3장)는 무료
     };
   });
   return { ...b, chapters };
 });
-
 
 /* ════════════════════════════════════════════════════════════
    PAGE SPLITTING
@@ -176,22 +168,6 @@ function splitPages(text) {
   return pages;
 }
 
-/* Build the runtime BOOKS array.
-   Each book gets a `chapters` array where each chapter has
-   a `pages` array (split text). */
-const BOOKS = RAW_BOOKS.map(b => {
-  const chapters = (b.chapters || []).map((ch, ci) => {
-    const cleaned = cleanText(ch.text);
-    return {
-      index:  ci,
-      title:  ch.title || `Chapter ${ci + 1}`,
-      text:   cleaned,
-      pages:  splitPages(cleaned),
-      locked: ci >= FREE_CHAPTERS,   // chapters[0..2] free
-    };
-  });
-  return { ...b, chapters };
-});
 
 const QUOTES = [
   '"A reader lives a thousand lives before he dies." -- George R.R. Martin',
