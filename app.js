@@ -9,8 +9,8 @@
                        wpm int, acc int, chars int,
                        dur_ms int, created_at timestamptz)
 ════════════════════════════════════════════════════════════ */
-const SUPABASE_URL      = 'https://YOUR_PROJECT.supabase.co/rest/v1/';
-const SUPABASE_ANON_KEY = 'YOUR_ANON_KEY';
+const SUPABASE_URL      = 'https://ootavtvsojfugqbrevpb.supabase.co/rest/v1/';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9vdGF2dHZzb2pmdWdxYnJldnBiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY5NTA2NjQsImV4cCI6MjA5MjUyNjY2NH0.LWjIMMW_rX0hCALhn_-jQDGZrylHx0v_kRDP5teiWJU';
 
 /* ── Supabase helpers ── */
 async function sbGet(table, params = '') {
