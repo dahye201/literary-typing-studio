@@ -92,14 +92,19 @@ async function deleteRemoteSession(sessionId) {
    TEXT CLEANSING UTILITY
 ════════════════════════════════════════════════════════════ */
 function cleanText(str) {
+  if (!str) return "";
+  
   return str
     .normalize('NFKC')
-    .replace(/\u201C|\u201D/g, '"')
+    .replace(/\u201C|\u201D/g, '"') // 스마트 따옴표 처리
     .replace(/\u2018|\u2019/g, "'")
-    .replace(/\u2014/g, '--')
-    .replace(/\u2013/g, '-')
-    .replace(/\u2026/g, '...')
-    .replace(/\u00A0/g, ' ');
+    .replace(/\r\n/g, '\n')         // 줄바꿈 기호 통일
+    .replace(/\t/g, ' ')            // 탭 문자를 공백으로
+    .split('\n')                    // 줄 단위로 쪼개서
+    .map(line => line.trim())       // 각 줄 앞뒤의 불필요한 공백(시작점 엉망인 것) 제거
+    .filter(line => line.length > 0) // 빈 줄 제거 (선택 사항, 필요 없으면 이 줄 삭제)
+    .join('\n\n')                   // 문단 사이를 깔끔하게 두 줄로 연결
+    .replace(/ +/g, ' ');           // 연속된 공백 하나로 축소
 }
 
 /* ════════════════════════════════════════════════════════════
