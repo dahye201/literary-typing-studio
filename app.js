@@ -11,7 +11,7 @@
 ════════════════════════════════════════════════════════════ */
 const SUPABASE_URL      = 'https://ootavtvsojfugqbrevpb.supabase.co/';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9vdGF2dHZzb2pmdWdxYnJldnBiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY5NTA2NjQsImV4cCI6MjA5MjUyNjY2NH0.LWjIMMW_rX0hCALhn_-jQDGZrylHx0v_kRDP5teiWJU';
-const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 /* ── Supabase helpers ── */
 async function sbGet(table, params = '') {
@@ -342,11 +342,11 @@ document.getElementById('socE').addEventListener('click', async () => {
 
   try {
     // 가입 시도
-    let { data, error } = await supabase.auth.signUp({ email, password });
+    let { data, error } = await sb.auth.signUp({ email, password });
 
     // 이미 가입된 계정이면 바로 로그인 시도
     if (error && error.message.includes('already registered')) {
-      const { data: lData, error: lError } = await supabase.auth.signInWithPassword({ email, password });
+      const { data: lData, error: lError } = await sb.auth.signInWithPassword({ email, password });
       data = lData;
       error = lError;
     }
