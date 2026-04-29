@@ -1,4 +1,4 @@
-'use strict';
+'use strict'
 
 /* ════════════════════════════════════════════════════════════
    SUPABASE CONFIG
@@ -9,8 +9,9 @@
                        wpm int, acc int, chars int,
                        dur_ms int, created_at timestamptz)
 ════════════════════════════════════════════════════════════ */
-const SUPABASE_URL      = 'https://ootavtvsojfugqbrevpb.supabase.co/rest/v1/';
+const SUPABASE_URL      = 'https://ootavtvsojfugqbrevpb.supabase.co/';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9vdGF2dHZzb2pmdWdxYnJldnBiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY5NTA2NjQsImV4cCI6MjA5MjUyNjY2NH0.LWjIMMW_rX0hCALhn_-jQDGZrylHx0v_kRDP5teiWJU';
+const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 /* ── Supabase helpers ── */
 async function sbGet(table, params = '') {
@@ -330,26 +331,47 @@ document.getElementById('sbBack').addEventListener('click', () => {
   goScr('sLib'); rl();
 });
 
-/* ── AUTH (demo + Supabase hook) ── */
-['socG', 'socA', 'socE'].forEach(id =>
-  document.getElementById(id).addEventListener('click', async () => {
-    /*
-      PRODUCTION: Replace this block with your real OAuth / email-magic-link flow.
-      Example for Supabase Auth (Google OAuth):
-        const { data, error } = await supabase.auth.signInWithOAuth({ provider: 'google' });
-      Then handle the session via supabase.auth.onAuthStateChange().
-    */
-    const userId = 'demo-user-' + Date.now();
-    currentUser  = { id: userId, name: 'Demo User', email: 'demo@example.com' };
-    document.getElementById('bSI').textContent = currentUser.name;
-    isPremium = await checkIsPremium(userId);
-    closeOv('ovL');
-    /* Reload sidebar in case lock state changed */
-    if (document.getElementById('sTw').classList.contains('on')) {
-      renderSidebar(curBook);
+/* ── 실제 Supabase 가입/로그인 연결 ── */
+
+// 1. 구글 로그인 (준비중)
+document.getElementById('socG').addEventListener('click', () => alert('구글 로그인 준비 중입니다.'));
+
+// 2. 이메일 가입/로그인 (socE 버튼)
+document.getElementById('socE').addEventListener('click', async () => {
+  const email = prompt("이메일을 입력하세요:");
+  const password = prompt("비밀번호를 입력하세요 (6자리 이상):");
+
+  if (!email || !password) return;
+
+  try {
+    // 가입 시도
+    let { data, error } = await supabase.auth.signUp({ email, password });
+
+    // 이미 가입된 계정이면 바로 로그인 시도
+    if (error && error.message.includes('already registered')) {
+      const { data: lData, error: lError } = await supabase.auth.signInWithPassword({ email, password });
+      data = lData;
+      error = lError;
     }
-  })
-);
+
+    if (error) throw error;
+
+    if (data.user) {
+      currentUser = data.user;
+      document.getElementById('bSI').textContent = currentUser.email.split('@')[0];
+      isPremium = await checkIsPremium(currentUser.id);
+      closeOv('ovL');
+      alert("로그인되었습니다!");
+      
+      // 사이드바 새로고침 (잠금 해제 반영)
+      if (document.getElementById('sTw').classList.contains('on')) {
+        renderSidebar(curBook);
+      }
+    }
+  } catch (err) {
+    alert("오류가 발생했습니다: " + err.message);
+  }
+});
 
 /* Completion overlay buttons */
 document.getElementById('doneLibBtn').addEventListener('click', () => {
