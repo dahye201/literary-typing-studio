@@ -120,19 +120,41 @@ function cleanText(str) {
    Minimum: each chapter text should be ~2 000 characters
             so PAGE_SIZE = 700 gives 3+ pages per chapter.
 ════════════════════════════════════════════════════════════ */
-const PAGE_SIZE     = 700;   // characters per typing page
-const FREE_CHAPTERS = 3;     // chapters[0..2] free; chapters[3+] locked
 
-// 클로드가 시킨 연결 로직입니다.
-const RAW_BOOKS = bookData.map(book => ({
-  title: book.title, // 책 제목
-  chapters: [ // 지금은 책 한 권당 챕터를 하나씩 넣고 있으니 이렇게 구성합니다.
-      {
-          title: book.title,
-          text: book.content
-      }
-  ]
-}));
+/* ════════════════════════════════════════════════════════════
+   BOOK DATA 변환 로직 (사장님 데이터 맞춤형)
+════════════════════════════════════════════════════════════ */
+const PAGE_SIZE     = 700;   
+const FREE_CHAPTERS = 3;     
+
+// 1. data.js의 개별 챕터들을 하나의 'Pride and Prejudice' 책으로 묶어줍니다.
+const RAW_BOOKS = [{
+  id: "pride-and-prejudice",
+  title: "Pride and Prejudice",
+  author: "Jane Austen",
+  year: "1813",
+  genre: "novel",
+  // data.js에 있는 bookData를 챕터 배열로 변환
+  chapters: bookData.map(ch => ({
+    title: ch.title,
+    text: ch.content
+  }))
+}];
+
+/* 2. 실행 시점에 사용할 BOOKS 배열 생성 */
+const BOOKS = RAW_BOOKS.map(b => {
+  const chapters = (b.chapters || []).map((ch, ci) => {
+    const cleaned = cleanText(ch.text);
+    return {
+      index:  ci,
+      title:  ch.title || `Chapter ${ci + 1}`,
+      text:   cleaned,
+      pages:  splitPages(cleaned),
+      locked: ci >= FREE_CHAPTERS,   // 챕터 4부터 잠금
+    };
+  });
+  return { ...b, chapters };
+});
 
 
 /* ════════════════════════════════════════════════════════════
