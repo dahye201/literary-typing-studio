@@ -2,22 +2,18 @@
 
 /* ════════════════════════════════════════════════════════════
    SUPABASE CONFIG
-   - Replace SUPABASE_URL and SUPABASE_ANON_KEY with your own
-   - Table: profiles (id uuid, is_premium bool, email text)
-   - Table: sessions  (id uuid, user_id uuid, book_id text,
-                       chapter_idx int, page_idx int,
-                       wpm int, acc int, chars int,
-                       dur_ms int, created_at timestamptz)
 ════════════════════════════════════════════════════════════ */
-
 const SUPABASE_URL      = 'https://ootavtvsojfugqbrevpb.supabase.co/';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9vdGF2dHZzb2pmdWdxYnJldnBiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY5NTA2NjQsImV4cCI6MjA5MjUyNjY2NH0.LWjIMMW_rX0hCALhn_-jQDGZrylHx0v_kRDP5teiWJU';
-const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-/* ── Supabase helpers ── */
+// [수정] 뻑나던 supabase.createClient 줄을 삭제했습니다.
+
+/* ── Supabase helpers (사장님 오리지널 방식) ── */
 async function sbGet(table, params = '') {
   try {
-    const res = await fetch(`${SUPABASE_URL}${table}?${params}`, {
+    // URL 끝에 rest/v1/가 붙어야 정상 작동할 수 있습니다.
+    const baseUrl = SUPABASE_URL.endsWith('/') ? SUPABASE_URL : SUPABASE_URL + '/';
+    const res = await fetch(`${baseUrl}rest/v1/${table}?${params}`, {
       headers: {
         'apikey':        SUPABASE_ANON_KEY,
         'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
@@ -29,7 +25,8 @@ async function sbGet(table, params = '') {
 
 async function sbPost(table, body) {
   try {
-    const res = await fetch(`${SUPABASE_URL}${table}`, {
+    const baseUrl = SUPABASE_URL.endsWith('/') ? SUPABASE_URL : SUPABASE_URL + '/';
+    const res = await fetch(`${baseUrl}rest/v1/${table}`, {
       method: 'POST',
       headers: {
         'apikey':        SUPABASE_ANON_KEY,
@@ -43,42 +40,18 @@ async function sbPost(table, body) {
   } catch { return false; }
 }
 
-async function sbDelete(table, params = '') {
-  try {
-    const res = await fetch(`${SUPABASE_URL}${table}?${params}`, {
-      method: 'DELETE',
-      headers: {
-        'apikey':        SUPABASE_ANON_KEY,
-        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
-      }
-    });
-    return res.ok;
-  } catch { return false; }
-}
+// [수정] 에러 유발하던 supabase.auth.onAuthStateChange 부분을 
+// 사장님 방식에 맞춰서 일단 비활성화(주석) 처리했습니다. 
+// 작품부터 띄우는 게 우선이니까요!
 
-// app.js 하단이나 적절한 곳에 추가
-supabase.auth.onAuthStateChange(async (event, session) => {
-  if (session && session.user) {
-    currentUser = session.user;
-    // 프리미엄 여부 다시 확인
-    isPremium = await checkIsPremium(session.user.id);
-    document.getElementById('bSI').textContent = currentUser.email.split('@')[0];
-    
-    // 만약 사이드바가 열려있다면 새로고침해서 자물쇠 없애기
-    if (document.getElementById('sTw').classList.contains('on')) {
-      renderSidebar(curBook);
-    }
-  }
-});
-
-/* Check whether the logged-in user has paid ($4.99 one-time) */
+/* Check whether the logged-in user has paid */
 async function checkIsPremium(userId) {
   const data = await sbGet('profiles', `select=is_premium&id=eq.${userId}`);
   if (Array.isArray(data) && data.length > 0) return !!data[0].is_premium;
   return false;
 }
 
-/* Persist a finished typing session to Supabase */
+/* Persist a finished typing session */
 async function persistSession(userId, sess) {
   await sbPost('sessions', {
     user_id:     userId,
