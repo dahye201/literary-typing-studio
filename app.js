@@ -9,6 +9,7 @@
                        wpm int, acc int, chars int,
                        dur_ms int, created_at timestamptz)
 ════════════════════════════════════════════════════════════ */
+
 const SUPABASE_URL      = 'https://ootavtvsojfugqbrevpb.supabase.co/';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9vdGF2dHZzb2pmdWdxYnJldnBiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY5NTA2NjQsImV4cCI6MjA5MjUyNjY2NH0.LWjIMMW_rX0hCALhn_-jQDGZrylHx0v_kRDP5teiWJU';
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -344,46 +345,28 @@ document.getElementById('sbBack').addEventListener('click', () => {
 });
 
 /* ── 실제 Supabase 가입/로그인 연결 ── */
-// 페이지 로드 시 실행되는 코드// 페이지가 열리자마자 로그인 상태인지 확인하는 코드
-supabase.auth.onAuthStateChange(async (event, session) => {
-  if (session) {
-    console.log("로그인 성공:", session.user);
-    currentUser = session.user;
-    
-    // 유저 정보 표시 (사장님 UI에 맞게 수정)
-    document.getElementById('user-email').textContent = currentUser.email;
-    
-    // 프리미엄 여부 확인 루틴 실행
-    isPremium = await checkIsPremium(currentUser.id);
-  } else {
-    console.log("로그아웃 상태");
-    currentUser = null;
-  }
-});
+
+// 1. 구글 로그인 버튼을 눌렀을 때 실행될 함수
+async function signInWithGoogle() {
+  // 사장님이 설정한 SUPABASE_URL과 ANON_KEY를 그대로 사용합니다.
+  // 이 주소는 구글 로그인창으로 바로 쏴주는 주소예요.
+  const authUrl = `${SUPABASE_URL}/auth/v1/authorize?provider=google&redirect_to=https://lit-typing.com`;
+  
+  // 페이지 이동! (복잡한 SDK 명령 대신 그냥 주소로 보내버리는 겁니다)
+  window.location.href = authUrl;
+}
+
+// 2. 페이지 로드 시 로그인 상태인지 확인 (기존 onload 안에 합치세요)
 window.onload = async () => {
-  const { data: { session } } = await supabase.auth.getSession();
-  if (session) {
-    // 세션이 있으면 자동으로 로그인 처리
-    currentUser = session.user;
-    isPremium = await checkIsPremium(currentUser.id);
-    updateUI(currentUser); // UI 업데이트 함수 (사장님 코드에 맞게 수정)
+  // 작품 로딩은 기존에 쓰시던 sbGet이나 works 배열 사용 코드를 그대로 두세요!
+  // 예: renderWorks(); 
+
+  // URL에 로그인 결과(access_token)가 포함되어 있는지 확인
+  if (window.location.hash) {
+    console.log("구글 로그인 성공 데이터 감지!");
+    // 여기서 유저 정보를 가져오거나 처리하는 로직이 들어가면 됩니다.
   }
 };
-// 구글 로그인 함수
-async function signInWithGoogle() {
-  const { data, error } = await supabase.auth.signInWithOAuth({
-    provider: 'google',
-    options: {
-      // 로그인이 끝나고 다시 돌아올 우리 사이트 주소
-      redirectTo: 'https://lit-typing.com' 
-    }
-  });
-
-  if (error) {
-    console.error('구글 로그인 에러:', error.message);
-    alert('로그인 중 오류가 발생했습니다.');
-  }
-}
 
 // 2. 이메일 가입/로그인 (socE 버튼)
 document.getElementById('socE').addEventListener('click', async () => {
