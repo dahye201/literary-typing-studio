@@ -1046,3 +1046,10 @@ document.getElementById('dDl').addEventListener('click', async () => {
 ════════════════════════════════════════════════════════════ */
 rl();
 goScr('sLib');
+
+// 구글 로그인 기능 추가
+async function signInWithGoogle() {
+  const baseUrl = SUPABASE_URL.endsWith('/') ? SUPABASE_URL : SUPABASE_URL + '/';
+  const authUrl = `${baseUrl}auth/v1/authorize?provider=google&redirect_to=https://lit-typing.com`;
+  window.location.href = authUrl;
+}
