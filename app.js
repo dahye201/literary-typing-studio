@@ -55,6 +55,21 @@ async function sbDelete(table, params = '') {
   } catch { return false; }
 }
 
+// app.js 하단이나 적절한 곳에 추가
+supabase.auth.onAuthStateChange(async (event, session) => {
+  if (session && session.user) {
+    currentUser = session.user;
+    // 프리미엄 여부 다시 확인
+    isPremium = await checkIsPremium(session.user.id);
+    document.getElementById('bSI').textContent = currentUser.email.split('@')[0];
+    
+    // 만약 사이드바가 열려있다면 새로고침해서 자물쇠 없애기
+    if (document.getElementById('sTw').classList.contains('on')) {
+      renderSidebar(curBook);
+    }
+  }
+});
+
 /* Check whether the logged-in user has paid ($4.99 one-time) */
 async function checkIsPremium(userId) {
   const data = await sbGet('profiles', `select=is_premium&id=eq.${userId}`);
@@ -329,9 +344,46 @@ document.getElementById('sbBack').addEventListener('click', () => {
 });
 
 /* ── 실제 Supabase 가입/로그인 연결 ── */
+// 페이지 로드 시 실행되는 코드// 페이지가 열리자마자 로그인 상태인지 확인하는 코드
+supabase.auth.onAuthStateChange(async (event, session) => {
+  if (session) {
+    console.log("로그인 성공:", session.user);
+    currentUser = session.user;
+    
+    // 유저 정보 표시 (사장님 UI에 맞게 수정)
+    document.getElementById('user-email').textContent = currentUser.email;
+    
+    // 프리미엄 여부 확인 루틴 실행
+    isPremium = await checkIsPremium(currentUser.id);
+  } else {
+    console.log("로그아웃 상태");
+    currentUser = null;
+  }
+});
+window.onload = async () => {
+  const { data: { session } } = await supabase.auth.getSession();
+  if (session) {
+    // 세션이 있으면 자동으로 로그인 처리
+    currentUser = session.user;
+    isPremium = await checkIsPremium(currentUser.id);
+    updateUI(currentUser); // UI 업데이트 함수 (사장님 코드에 맞게 수정)
+  }
+};
+// 구글 로그인 함수
+async function signInWithGoogle() {
+  const { data, error } = await supabase.auth.signInWithOAuth({
+    provider: 'google',
+    options: {
+      // 로그인이 끝나고 다시 돌아올 우리 사이트 주소
+      redirectTo: 'https://lit-typing.com' 
+    }
+  });
 
-// 1. 구글 로그인 (준비중)
-document.getElementById('socG').addEventListener('click', () => alert('구글 로그인 준비 중입니다.'));
+  if (error) {
+    console.error('구글 로그인 에러:', error.message);
+    alert('로그인 중 오류가 발생했습니다.');
+  }
+}
 
 // 2. 이메일 가입/로그인 (socE 버튼)
 document.getElementById('socE').addEventListener('click', async () => {
