@@ -385,6 +385,41 @@ html,body{background:var(--bg);min-height:100vh;font-family:var(--E);color:var(-
 .detb:hover{color:var(--tx)}
 .detd{font-family:var(--E);font-size:9px;letter-spacing:.13em;text-transform:uppercase;color:var(--red);background:none;border:1px solid var(--rd);padding:6px 14px;cursor:pointer;margin-left:auto}
 .detd:hover{border-color:var(--red)}
+/* 여기서부터 복사하세요 */
+
+/* 1. 기본적으로 모바일용 메뉴 아이템들은 숨겨둡니다 */
+.sb-nav-mobile { display: none; }
+
+/* 2. 화면 너비가 600px보다 작아질 때만 실행되는 마법 (반응형) */
+@media screen and (max-width: 600px) {
+  
+  /* 상단 메뉴에서 CHAPTERS 버튼 빼고 나머지는 안 보이게! */
+  .nav-item.d-none {
+    display: none !important;
+  }
+  
+  /* 대신 사이드바(서랍) 안에 추가한 메뉴들을 보여줍니다 */
+  .sb-nav-mobile {
+    display: block;
+    padding: 15px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    margin-top: 20px;
+  }
+  
+  .sb-nav-item {
+    padding: 15px 10px;
+    font-size: 14px;
+    color: #ccc;
+    cursor: pointer;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  
+  .sb-nav-item:last-child { border-bottom: none; }
+}
+/* 여기까지 복사해서 </style> 직전에 넣으세요 */
 </style>
 </head>
 <body>
@@ -434,19 +469,31 @@ html,body{background:var(--bg);min-height:100vh;font-family:var(--E);color:var(-
 <!-- 1. 서랍을 여는 버튼은 서랍 '밖'에 있어야 합니다! -->
 <div class="top-menu">
   <button onclick="toggleSidebar()">☰ CHAPTERS</button>
+  <!-- 아래 버튼들은 모바일에서 숨길 놈들 -->
+  <button class="nav-item d-none">MY PROGRESS</button>
+  <button class="nav-item d-none">SUPPORT</button>
+</div>
 </div>
     <!-- ── LEFT SIDEBAR: chapter list ── -->
     <aside class="sidebar" id="sidebar">
       <div class="sb-head">
-        <button class="sb-back" id="sbBack">
-          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
-          Library
+        <!-- 닫기 버튼: onclick으로 서랍 닫기 기능을 연결함 -->
+        <button class="sb-back" id="sbBack" onclick="toggleSidebar()" style="cursor:pointer; display:flex; align-items:center; gap:5px;">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="15 18 9 12 15 6"/>
+            </svg>
+            CLOSE
         </button>
         <div class="sb-book-title" id="sbBookTitle">—</div>
         <div class="sb-book-author" id="sbBookAuthor">—</div>
-      </div>
       <!-- Chapter rows injected here by JS -->
       <div class="sb-list" id="sbList"></div>
+      <div class="sb-nav-mobile">
+        <hr>
+        <div onclick="location.href='/progress'">📈 My Progress</div>
+        <div onclick="location.href='/support'">☕ Support</div>
+        <div onclick="location.href='/login'">👤 Sign In</div>
+      </div>
     </aside>
 
     <!-- ── RIGHT: main typing area ── -->
@@ -594,11 +641,14 @@ html,body{background:var(--bg);min-height:100vh;font-family:var(--E);color:var(-
 </div></div>
 
 <!-- 구글/깃허브 버튼들 아래쪽에 추가 -->
+<!-- 600번 줄 앞에 <!-- 를 붙이고, 604번 줄 뒤에 --> 를 붙여보세요 -->
+<!--
 <div style="margin-top: 20px; text-align: center;">
-  <button onclick="checkout()" class="premium-btn" style="background-color: #635bff; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold;">
+    <button onclick="checkout()" class="premium-btn" ...>
       🚀 Unlock Lifetime Access - $12.99
-  </button>
+    </button>
 </div>
+-->
 
 <!-- ══════════════ COFFEE MODAL ══════════════ -->
 <div class="ov" id="ovC"><div class="mb" style="border-color:rgba(200,168,112,.4)">
