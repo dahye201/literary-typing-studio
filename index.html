@@ -84,23 +84,35 @@ html,body{background:var(--bg);min-height:100vh;font-family:var(--E);color:var(-
 /* ════════════════════════════════════════
    TYPEWRITER SCREEN  — SIDEBAR LAYOUT
 ════════════════════════════════════════ */
-.tw-layout{
-  display:flex;
-  flex:1;
-  /* Full height minus topbar (≈50px) */
-  height:calc(100vh - 50px);
-  overflow:hidden;
+.tw-layout {
+  display: block; /* flex에서 block으로 변경하여 사이드바 자리를 비움 */
+  width: 100%;
+  height: calc(100vh - 50px);
+  overflow: hidden;
+  position: relative;
 }
 
 /* ── SIDEBAR ── */
-.sidebar{
-  width:var(--sb-w);
-  flex-shrink:0;
-  background:var(--bg2);
-  border-right:1px solid var(--bd);
-  display:flex;
-  flex-direction:column;
-  overflow:hidden;
+.sidebar {
+  position: fixed;         /* 화면에 고정 */
+  top: 0;
+  left: -300px;            /* 서랍 너비만큼 왼쪽으로 숨김 */
+  width: 300px;            /* 서랍 너비 고정 */
+  height: 100vh;           /* 화면 전체 높이 */
+  z-index: 10000;          /* 최상단 레이어 */
+  background: rgba(28, 26, 23, 0.85) !important; /* 반투명 배경 */
+  backdrop-filter: blur(15px);                   /* ★ 블러 효과 ★ */
+  -webkit-backdrop-filter: blur(15px);           /* 사파리용 */
+  border-right: 1px solid var(--bd);
+  display: flex;
+  flex-direction: column;
+  transition: left 0.4s cubic-bezier(0.25, 0.8, 0.25, 1); /* 부드러운 슬라이딩 */
+  box-shadow: 10px 0 30px rgba(0,0,0,0.5);
+}
+
+/* 사이드바가 열렸을 때 (JS로 이 클래스를 추가할 겁니다) */
+.sidebar.active {
+  left: 0;
 }
 /* Sidebar header */
 .sb-head{
@@ -115,11 +127,13 @@ html,body{background:var(--bg);min-height:100vh;font-family:var(--E);color:var(-
   margin-bottom:10px;transition:color .13s;
 }
 .sb-back:hover{color:var(--t2)}
-.sb-book-title{
-  font-family:var(--P);font-size:13px;font-style:italic;color:var(--tx);
-  line-height:1.35;
-  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;
-  margin-bottom:2px;
+.sb-book-title {
+  font-family: var(--P);
+  font-size: 18px !important; /* 13px -> 18px */
+  font-style: italic;
+  color: var(--tx);
+  line-height: 1.3;
+  margin-bottom: 6px;
 }
 .sb-book-author{
   font-family:var(--E);font-size:8px;letter-spacing:.13em;text-transform:uppercase;
@@ -226,21 +240,28 @@ html,body{background:var(--bg);min-height:100vh;font-family:var(--E);color:var(-
 .pp::before{content:'';position:absolute;left:34px;top:0;bottom:0;width:1px;background:rgba(180,60,60,.09)}
 .pp::after{content:'';position:absolute;top:0;right:0;width:0;height:0;border:solid transparent;border-width:0 18px 18px 0;border-right-color:#1e1c18}
 .ph{display:flex;justify-content:space-between;align-items:baseline;padding-bottom:7px;margin-bottom:9px;border-bottom:1px solid rgba(28,18,8,.35);position:relative;z-index:1}
-.phx{font-family:var(--E);font-size:8px;letter-spacing:.12em;text-transform:uppercase;color:rgba(28,18,8,.3)}
+.phx {
+  font-family: var(--E);
+  font-size: 14px !important; /* 8px -> 14px로 대폭 상향 */
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: rgba(28,18,8, 0.6) !important; /* 조금 더 진하게 */
+  font-weight: bold;
+}
 .pm{margin-bottom:10px;position:relative;z-index:1}
 .ptt{font-family:var(--E);font-size:8px;letter-spacing:.2em;text-transform:uppercase;color:rgba(28,18,8,.4);margin-bottom:2px}
 .pdv{height:1px;background:rgba(28,18,8,.1);margin-bottom:2px}
 .pau{font-family:var(--P);font-size:9px;font-style:italic;color:rgba(28,18,8,.28)}
 /* typing area */
 .typing-wrap{position:relative;z-index:1;min-height:56px}
-.typing-display{font-family:var(--M);font-size:13.5px;line-height:27px;letter-spacing:.022em;white-space:pre-wrap;word-break:break-word;min-height:56px;pointer-events:none;user-select:none;}
+.typing-display{font-family:var(--M);font-size:16px;line-height:26px;letter-spacing:.022em;white-space:pre-wrap;word-break:break-word;min-height:56px;pointer-events:none;user-select:none;}
 .typing-input{position:absolute;top:0;left:0;width:100%;height:100%;min-height:56px;opacity:0;background:transparent;border:none !important;outline:none !important;box-shadow:none !important;-webkit-appearance:none;resize:none;cursor:text;z-index:10;font-size:16px;color:transparent;caret-color:transparent;padding:0;margin:0;}
 .typing-input:focus,.typing-input:active{outline:none !important;box-shadow:none !important;border:none !important;}
 /* char states */
 .ck{color:var(--ink)}
 .incorrect{color:var(--red);text-decoration:underline wavy rgba(208,112,112,.65);background:rgba(208,112,112,.08);border-radius:1px}
-.cd{color:var(--id)}
-.cc{color:var(--id);position:relative;display:inline}
+.cd{color: #333 !important;}
+.cc{color: #000 !important; font-weight: bold; position:relative;display:inline}
 .cc::before{content:'';position:absolute;left:0;top:3px;bottom:3px;width:1.5px;background:var(--ink);animation:blink .9s steps(1) infinite}
 @keyframes blink{0%,49%{opacity:1}50%,100%{opacity:0}}
 /* progress */
@@ -410,6 +431,7 @@ html,body{background:var(--bg);min-height:100vh;font-family:var(--E);color:var(-
     <!-- ── LEFT SIDEBAR: chapter list ── -->
     <aside class="sidebar" id="sidebar">
       <div class="sb-head">
+        <button onclick="toggleSidebar()">☰ CHAPTERS</button>
         <button class="sb-back" id="sbBack">
           <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
           Library
@@ -582,11 +604,11 @@ html,body{background:var(--bg);min-height:100vh;font-family:var(--E);color:var(-
 <div class="ov" id="ovP"><div class="mb" style="max-width:440px">
   <button class="mx" data-c="ovP">[close]</button>
   <span class="mh">Unlock Chapter 4 and Beyond</span>
-  <p class="ms">Chapters 1–3 are free.<br>Unlock the full work for a one-time $4.99 payment.</p>
+  <p class="ms">Chapters 1–3 are free.<br>Unlock the full work for a one-time $12.99 payment.</p>
   <div class="plc" style="margin:18px 0 12px;padding:20px 16px;border:1px solid var(--gd)">
-    <div class="plp_">$4.99<small> one-time</small></div>
+    <div class="plp_">$12.99<small> one-time</small></div>
     <div class="plf_">All chapters unlocked<br>Every work in the library<br>Progress history &amp; stats</div>
-    <button class="plb_" id="premLogin">Unlock Now — $4.99</button>
+    <button class="plb_" id="premLogin">Unlock Now — $12.99</button>
   </div>
   <p class="pln2">One-time payment &middot; Instant access</p>
 </div></div>
@@ -635,5 +657,11 @@ html,body{background:var(--bg);min-height:100vh;font-family:var(--E);color:var(-
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="data.js"></script>
 <script src="app.js"></script>
+<script>
+  function toggleSidebar() {
+      const sidebar = document.querySelector('.sidebar');
+      sidebar.classList.toggle('active');
+  }
+</script>
 </body>
 </html>
