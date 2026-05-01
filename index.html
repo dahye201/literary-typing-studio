@@ -50,12 +50,18 @@ html,body{background:var(--bg);min-height:100vh;font-family:var(--E);color:var(-
 
 /* ── TOPBAR ── */
 .top{display:flex;align-items:center;justify-content:space-between;padding:13px 28px;border-bottom:1px solid var(--bd);flex-shrink:0;background:var(--bg);position:sticky;top:0;z-index:200}
-.logo{font-family:var(--E);font-size:12px;letter-spacing:.28em;text-transform:uppercase;color:var(--tx);background:none;border:none;cursor:pointer;padding:0}
-.tnav{display:flex;align-items:center;gap:8px}
-.tbtn{font-family:var(--E);font-size:10px;letter-spacing:.15em;text-transform:uppercase;color:var(--t2);background:none;border:1px solid var(--bd);padding:5px 13px;cursor:pointer;transition:all .14s}
+.logo{font-family:var(--E);font-size:12px;letter-spacing:.28em;text-transform:uppercase;color:var(--tx);background:none;border:none;cursor:pointer;padding:0;flex-shrink:0}
+.tnav{display:flex;align-items:center;gap:6px}
+.tbtn{font-family:var(--E);font-size:10px;letter-spacing:.15em;text-transform:uppercase;color:var(--t2);background:none;border:1px solid var(--bd);padding:5px 0;cursor:pointer;transition:all .14s;width:80px;text-align:center;white-space:nowrap;flex-shrink:0}
 .tbtn:hover{color:var(--tx);border-color:var(--b2)}
 .tbtn.g{color:var(--gld);border-color:var(--gd)}
 .tbtn.g:hover{border-color:var(--gld);background:rgba(200,168,112,.06)}
+@media(max-width:600px){
+  .top{padding:10px 14px}
+  .tnav{gap:4px}
+  .tbtn{width:58px;font-size:8px;letter-spacing:.06em;padding:5px 0}
+  .logo{font-size:9px;letter-spacing:.15em}
+}
 
 /* ── SCREENS ── */
 .scr{display:none;flex-direction:column;flex:1}
@@ -106,14 +112,13 @@ html,body{background:var(--bg);min-height:100vh;font-family:var(--E);color:var(-
 ════════════════════════════════════════ */
 /* 8번 줄 근처 .tw-layout 수정 */
 .tw-layout {
-  display: flex;          /* 다시 flex로 원복! */
-  flex-direction: column; /* 요소를 세로로 배치 (상단 바 제외한 영역) */
+  display: flex;
+  flex-direction: column;
   width: 100%;
   height: calc(100vh - 50px);
   overflow: hidden;
-  position: relative;     /* 사이드바(fixed)의 기준점이 꼬이지 않게 유지 */
-  /* --- 아래 코드를 추가해서 위로 끌어올리세요 --- */
-  margin-top: -80px;  /* 숫자가 클수록 위로 더 많이 올라갑니다 */
+  position: relative;
+  margin-top: 0;
 }
 
 
@@ -140,12 +145,16 @@ html,body{background:var(--bg);min-height:100vh;font-family:var(--E);color:var(-
   left: 0;
 }
 /* Sidebar header */
-.sb-head{
-  padding:14px 16px 10px;
-  border-bottom:1px solid var(--bd);
-  flex-shrink:0;
-  padding-bottom: 40px !important;  /* 아래쪽 안쪽 여백을 확 늘립니다 */
-  margin-bottom: 20px !important;   /* 박스 바깥쪽 여백도 추가 */
+/* 사이드바 제목(Gatsby)과 리스트 사이 간격 확실히 벌리기 */
+.sb-head {
+    margin-bottom: 40px !important; /* 바깥쪽 여백 */
+    padding-bottom: 20px !important; /* 안쪽 여백 */
+    border-bottom: 1px solid rgba(255,255,255,0.1); /* 구분선이 너무 붙어있으면 공간 확보 */
+}
+
+/* 만약 사이드바 전체가 너무 빡빡하다면 */
+.sb-content {
+    margin-top: 20px !important;
 }
 .sb-back{
   display:flex;align-items:center;gap:5px;
@@ -267,7 +276,7 @@ html,body{background:var(--bg);min-height:100vh;font-family:var(--E);color:var(-
 .pp{background:var(--cr);background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3CfeComponentTransfer%3E%3CfeFuncA type='linear' slope='0.045'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)'/%3E%3C/svg%3E");width:100%;min-height:260px;padding:18px 38px 20px;position:relative;cursor:text;border-left:1px solid var(--cr3);border-right:1px solid var(--cr3)}
 .pp::before{content:'';position:absolute;left:34px;top:0;bottom:0;width:1px;background:rgba(180,60,60,.09)}
 .pp::after{content:'';position:absolute;top:0;right:0;width:0;height:0;border:solid transparent;border-width:0 18px 18px 0;border-right-color:#1e1c18}
-.ph{display:flex;justify-content:space-between;align-items:baseline;padding-bottom:7px;margin-bottom:9px;border-bottom:1px solid rgba(28,18,8,.35);position:relative;z-index:1}
+.ph{display:flex;justify-content:flex-start;align-items:baseline;padding-bottom:7px;margin-bottom:9px;border-bottom:1px solid rgba(28,18,8,.35);position:relative;z-index:1}
 .phx {
   font-family: var(--E);
   font-size: 14px !important; /* 8px -> 14px로 대폭 상향 */
@@ -285,12 +294,12 @@ html,body{background:var(--bg);min-height:100vh;font-family:var(--E);color:var(-
 .typing-display{font-family:var(--M);font-size:14px;line-height:26px;letter-spacing:.022em;white-space:pre-wrap;word-break:break-word;min-height:56px;pointer-events:none;user-select:none;}
 .typing-input{position:absolute;top:0;left:0;width:100%;height:100%;min-height:56px;opacity:0;background:transparent;border:none !important;outline:none !important;box-shadow:none !important;-webkit-appearance:none;resize:none;cursor:text;z-index:10;font-size:16px;color:transparent;caret-color:transparent;padding:0;margin:0;}
 .typing-input:focus,.typing-input:active{outline:none !important;box-shadow:none !important;border:none !important;}
-/* char states */
-.ck{color:var(--ink)}
-.incorrect{color:var(--red);text-decoration:underline wavy rgba(208,112,112,.65);background:rgba(208,112,112,.08);border-radius:1px}
-.cd{color: #444 !important;}
-.cc{color: #000 !important; font-weight: bold; position:relative;display:inline}
-.cc::before{content:'';position:absolute;left:0;top:3px;bottom:3px;width:1.5px;background:var(--ink);animation:blink .9s steps(1) infinite}
+/* ── char states ── */
+.cd  { color: rgba(28,18,8,0.22) !important; font-weight: normal !important; }
+.ck  { color: var(--ink) !important; opacity: 1 !important; font-weight: bold !important; transition: color .08s, opacity .08s; }
+.incorrect { color: var(--red) !important; opacity: 1 !important; text-decoration: underline wavy rgba(208,112,112,.65); background: rgba(208,112,112,.08); border-radius: 1px; }
+.cc  { color: rgba(28,18,8,0.45) !important; font-weight: normal !important; position: relative; display: inline; }
+.cc::before { content:''; position:absolute; left:0; top:3px; bottom:3px; width:1.5px; background:var(--ink); animation:blink .9s steps(1) infinite; }
 @keyframes blink{0%,49%{opacity:1}50%,100%{opacity:0}}
 /* progress */
 .prw{margin:2px 13px 0;height:3px;background:rgba(200,192,168,.1)}
@@ -445,26 +454,48 @@ html,body{background:var(--bg);min-height:100vh;font-family:var(--E);color:var(-
 }
 /* 1. 상단 공백 제거: 타이핑 박스를 위로 끌어올림 */
 .typing-wrap {
-    margin-top: -100px !important; 
+    margin-top: 0 !important; 
     position: relative;
 }
 
-/* 2. 글자 투명도: 치기 전엔 흐리게, 치면 진하게 */
-#typDisp span {
-    opacity: 0.2 !important; 
-    transition: opacity 0.2s;
+/* ph-header-line: 제목·작가·챕터를 한 줄로 */
+.ph-header-line {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 0 6px;
+  width: 100%;
+}
+.ph-header-line .main-title {
+  font-family: var(--P);
+  font-size: 11px;
+  font-style: italic;
+  color: rgba(28,18,8,.65);
+  letter-spacing: .04em;
+  white-space: nowrap;
+}
+.ph-header-line .author-name {
+  font-family: var(--E);
+  font-size: 8px;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: rgba(28,18,8,.4);
+  white-space: nowrap;
+}
+.ph-header-line .chapter-info {
+  font-family: var(--E);
+  font-size: 8px;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: rgba(28,18,8,.4);
+  white-space: nowrap;
+}
+.ph-header-line .sep-line {
+  color: rgba(28,18,8,.25);
+  font-size: 9px;
 }
 
-#typDisp span.correct, 
-#typDisp span.typed {
-    opacity: 1 !important;
-    font-weight: bold;
-}
 
-#typDisp span.current {
-    opacity: 0.6 !important;
-    border-bottom: 2px solid var(--mc);
-}
 </style>
 </head>
 <body>
@@ -511,7 +542,6 @@ html,body{background:var(--bg);min-height:100vh;font-family:var(--E);color:var(-
 <!-- ══════════════ TYPEWRITER (with sidebar) ══════════════ -->
 <div class="scr" id="sTw">
   <div class="tw-layout">
-</div>
     <!-- ── LEFT SIDEBAR: chapter list ── -->
     <aside class="sidebar" id="sidebar">
       <div class="sb-head">
@@ -524,6 +554,7 @@ html,body{background:var(--bg);min-height:100vh;font-family:var(--E);color:var(-
         </button>
         <div class="sb-book-title" id="sbBookTitle">—</div>
         <div class="sb-book-author" id="sbBookAuthor">—</div>
+      </div><!-- /.sb-head -->
       <!-- Chapter rows injected here by JS -->
       <div class="sb-list" id="sbList"></div>
       <div class="sb-nav-mobile">
@@ -579,7 +610,9 @@ html,body{background:var(--bg);min-height:100vh;font-family:var(--E);color:var(-
                 <span class="sep-line">—</span>
                 <span class="chapter-info" id="pChName">CHAPTER 1</span>
               </div>
-              
+            </div> 
+          </div> 
+      </div>
           <div class="typing-wrap" id="typingWrap">
             <div class="typing-display" id="typDisp"></div>
             <textarea id="typInput" class="typing-input"
