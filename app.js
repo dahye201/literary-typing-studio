@@ -314,7 +314,7 @@ document.getElementById('mySI')    .addEventListener('click', () => openOv('ovL'
 
 /* Back button inside sidebar → return to library */
 document.getElementById('sbBack').addEventListener('click', () => {
-  goScr('sLib'); rl();
+  toggleSidebar();
 });
 
 /* ── 실제 Supabase 가입/로그인 연결 ── */
