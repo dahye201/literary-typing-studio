@@ -258,13 +258,13 @@ html,body{background:var(--bg);min-height:100vh;font-family:var(--E);color:var(-
 .pau{font-family:var(--P);font-size:9px;font-style:italic;color:rgba(28,18,8,.28)}
 /* typing area */
 .typing-wrap{position:relative;z-index:1;min-height:56px}
-.typing-display{font-family:var(--M);font-size:16px;line-height:26px;letter-spacing:.022em;white-space:pre-wrap;word-break:break-word;min-height:56px;pointer-events:none;user-select:none;}
+.typing-display{font-family:var(--M);font-size:14px;line-height:26px;letter-spacing:.022em;white-space:pre-wrap;word-break:break-word;min-height:56px;pointer-events:none;user-select:none;}
 .typing-input{position:absolute;top:0;left:0;width:100%;height:100%;min-height:56px;opacity:0;background:transparent;border:none !important;outline:none !important;box-shadow:none !important;-webkit-appearance:none;resize:none;cursor:text;z-index:10;font-size:16px;color:transparent;caret-color:transparent;padding:0;margin:0;}
 .typing-input:focus,.typing-input:active{outline:none !important;box-shadow:none !important;border:none !important;}
 /* char states */
 .ck{color:var(--ink)}
 .incorrect{color:var(--red);text-decoration:underline wavy rgba(208,112,112,.65);background:rgba(208,112,112,.08);border-radius:1px}
-.cd{color: #888 !important;}
+.cd{color: #777 !important;}
 .cc{color: #000 !important; font-weight: bold; position:relative;display:inline}
 .cc::before{content:'';position:absolute;left:0;top:3px;bottom:3px;width:1.5px;background:var(--ink);animation:blink .9s steps(1) infinite}
 @keyframes blink{0%,49%{opacity:1}50%,100%{opacity:0}}
@@ -431,11 +431,13 @@ html,body{background:var(--bg);min-height:100vh;font-family:var(--E);color:var(-
 <!-- ══════════════ TYPEWRITER (with sidebar) ══════════════ -->
 <div class="scr" id="sTw">
   <div class="tw-layout">
-
+<!-- 1. 서랍을 여는 버튼은 서랍 '밖'에 있어야 합니다! -->
+<div class="top-menu">
+  <button onclick="toggleSidebar()">☰ CHAPTERS</button>
+</div>
     <!-- ── LEFT SIDEBAR: chapter list ── -->
     <aside class="sidebar" id="sidebar">
       <div class="sb-head">
-        <button onclick="toggleSidebar()">☰ CHAPTERS</button>
         <button class="sb-back" id="sbBack">
           <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
           Library
@@ -445,12 +447,6 @@ html,body{background:var(--bg);min-height:100vh;font-family:var(--E);color:var(-
       </div>
       <!-- Chapter rows injected here by JS -->
       <div class="sb-list" id="sbList"></div>
-      <script>
-        function toggleSidebar() {
-            const sidebar = document.querySelector('.sidebar');
-            sidebar.classList.toggle('active');
-        }
-      </script>
     </aside>
 
     <!-- ── RIGHT: main typing area ── -->
@@ -671,5 +667,11 @@ html,body{background:var(--bg);min-height:100vh;font-family:var(--E);color:var(-
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="data.js"></script>
 <script src="app.js"></script>
+<script>
+  function toggleSidebar() {
+      const sidebar = document.querySelector('.sidebar');
+      sidebar.classList.toggle('active');
+  }
+</script>
 </body>
 </html>
