@@ -144,7 +144,8 @@ html,body{background:var(--bg);min-height:100vh;font-family:var(--E);color:var(-
   padding:14px 16px 10px;
   border-bottom:1px solid var(--bd);
   flex-shrink:0;
-  margin-bottom: 25px; /* 리스트와 간격을 벌려줍니다 */
+  padding-bottom: 40px !important;  /* 아래쪽 안쪽 여백을 확 늘립니다 */
+  margin-bottom: 20px !important;   /* 박스 바깥쪽 여백도 추가 */
 }
 .sb-back{
   display:flex;align-items:center;gap:5px;
@@ -442,7 +443,28 @@ html,body{background:var(--bg);min-height:100vh;font-family:var(--E);color:var(-
   
   .sb-nav-item:last-child { border-bottom: none; }
 }
+/* 1. 상단 공백 제거: 타이핑 박스를 위로 끌어올림 */
+.typing-wrap {
+    margin-top: -100px !important; 
+    position: relative;
+}
 
+/* 2. 글자 투명도: 치기 전엔 흐리게, 치면 진하게 */
+#typDisp span {
+    opacity: 0.2 !important; 
+    transition: opacity 0.2s;
+}
+
+#typDisp span.correct, 
+#typDisp span.typed {
+    opacity: 1 !important;
+    font-weight: bold;
+}
+
+#typDisp span.current {
+    opacity: 0.6 !important;
+    border-bottom: 2px solid var(--mc);
+}
 </style>
 </head>
 <body>
@@ -558,9 +580,6 @@ html,body{background:var(--bg);min-height:100vh;font-family:var(--E);color:var(-
                 <span class="chapter-info" id="pChName">CHAPTER 1</span>
               </div>
               
-              <!-- 오른쪽: 페이지 번호 (CH.1 · P.1 같은 형식) -->
-              <span class="phx" id="pPgNum">CH.1 · P.1</span>
-            </div>
           <div class="typing-wrap" id="typingWrap">
             <div class="typing-display" id="typDisp"></div>
             <textarea id="typInput" class="typing-input"
@@ -576,6 +595,7 @@ html,body{background:var(--bg);min-height:100vh;font-family:var(--E);color:var(-
         <div class="fan"><div class="fnb"><div class="fns"></div><div class="fnr"></div></div></div>
         <div class="mft"></div>
       </div></div>
+      
 
       <!-- Keyboard -->
       <div class="kbw"><div class="kb" id="kb">
