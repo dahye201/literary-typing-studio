@@ -208,7 +208,7 @@ let twAudio = null;
 function getTypewriterAudio() {
   if (!twAudio) {
     twAudio = new Audio('typewriter.mp3');
-    twAudio.volume = 0.55;
+    twAudio.volume = 0.85;
   }
   return twAudio;
 }
@@ -657,11 +657,12 @@ function loadPage(bookIdx, chapterIdx, pageIdx) {
   document.getElementById('idlePill').classList.remove('on');
   document.getElementById('prf').style.width = '0%';
 
-  /* Header info on paper */
-  document.getElementById('pTi') .textContent = book.title + ' — ' + chapter.title;
-  document.getElementById('pAu') .textContent = book.author + ', ' + book.year;
-  document.getElementById('pPgI').textContent  =
-    'Ch.' + (chapterIdx + 1) + ' · p.' + (pageIdx + 1);
+ /* Header info on paper */
+if (document.getElementById('pPgI')) document.getElementById('pPgI').textContent = book.title;
+if (document.getElementById('pAu')) document.getElementById('pAu').textContent = book.author + ', ' + book.year;
+if (document.getElementById('pChName')) document.getElementById('pChName').textContent = chapter.title;
+if (document.getElementById('pPgNum')) {
+    document.getElementById('pPgNum').textContent = 'Ch.' + (chapterIdx + 1) + ' · p.' + (pageIdx + 1);}
 
   /* Page nav */
   const totalPages = chapter.pages.length;
@@ -1047,6 +1048,7 @@ document.getElementById('dDl').addEventListener('click', async () => {
 rl();
 goScr('sLib');
 checkLoginStatus(); // 이 한 줄을 여기에 추가!
+
 
 // 구글 로그인 기능 추가
 async function signInWithGoogle() {

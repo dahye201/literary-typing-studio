@@ -84,13 +84,16 @@ html,body{background:var(--bg);min-height:100vh;font-family:var(--E);color:var(-
 /* ════════════════════════════════════════
    TYPEWRITER SCREEN  — SIDEBAR LAYOUT
 ════════════════════════════════════════ */
+/* 8번 줄 근처 .tw-layout 수정 */
 .tw-layout {
-  display: block; /* flex에서 block으로 변경하여 사이드바 자리를 비움 */
+  display: flex;          /* 다시 flex로 원복! */
+  flex-direction: column; /* 요소를 세로로 배치 (상단 바 제외한 영역) */
   width: 100%;
   height: calc(100vh - 50px);
   overflow: hidden;
-  position: relative;
+  position: relative;     /* 사이드바(fixed)의 기준점이 꼬이지 않게 유지 */
 }
+
 
 /* ── SIDEBAR ── */
 .sidebar {
@@ -199,6 +202,7 @@ html,body{background:var(--bg);min-height:100vh;font-family:var(--E);color:var(-
   display:flex;
   flex-direction:column;
   overflow-y:auto;
+  width: 100%; /* ← 이 줄이 핵심입니다! 이걸 넣어줘야 타자기가 꽉 찹니다. */
   scrollbar-width:thin;
   scrollbar-color:var(--bd) transparent;
 }
@@ -260,7 +264,7 @@ html,body{background:var(--bg);min-height:100vh;font-family:var(--E);color:var(-
 /* char states */
 .ck{color:var(--ink)}
 .incorrect{color:var(--red);text-decoration:underline wavy rgba(208,112,112,.65);background:rgba(208,112,112,.08);border-radius:1px}
-.cd{color: #333 !important;}
+.cd{color: #888 !important;}
 .cc{color: #000 !important; font-weight: bold; position:relative;display:inline}
 .cc::before{content:'';position:absolute;left:0;top:3px;bottom:3px;width:1.5px;background:var(--ink);animation:blink .9s steps(1) infinite}
 @keyframes blink{0%,49%{opacity:1}50%,100%{opacity:0}}
@@ -441,6 +445,12 @@ html,body{background:var(--bg);min-height:100vh;font-family:var(--E);color:var(-
       </div>
       <!-- Chapter rows injected here by JS -->
       <div class="sb-list" id="sbList"></div>
+      <script>
+        function toggleSidebar() {
+            const sidebar = document.querySelector('.sidebar');
+            sidebar.classList.toggle('active');
+        }
+      </script>
     </aside>
 
     <!-- ── RIGHT: main typing area ── -->
@@ -476,14 +486,18 @@ html,body{background:var(--bg);min-height:100vh;font-family:var(--E);color:var(-
       <div class="mw"><div class="mf">
         <div class="pa"><div class="pp" id="ppEl">
           <div class="ph">
-            <span class="phx">Literary Typing Studio</span>
-            <span class="phx" id="pPgI"></span>
-          </div>
-          <div class="pm">
-            <div class="ptt" id="pTi"></div>
-            <div class="pdv"></div>
-            <div class="pau" id="pAu"></div>
-          </div>
+              <!-- 왼쪽: 책 제목 - 작가 - 챕터명 (동적으로 변하는 구간) -->
+              <div class="ph-header-line">
+                <span class="main-title" id="pPgI">PRIDE AND PREJUDICE</span>
+                <span class="sep-line">—</span>
+                <span class="author-name" id="pAu">Jane Austen, 1813</span>
+                <span class="sep-line">—</span>
+                <span class="chapter-info" id="pChName">CHAPTER 1</span>
+              </div>
+              
+              <!-- 오른쪽: 페이지 번호 (CH.1 · P.1 같은 형식) -->
+              <span class="phx" id="pPgNum">CH.1 · P.1</span>
+            </div>
           <div class="typing-wrap" id="typingWrap">
             <div class="typing-display" id="typDisp"></div>
             <textarea id="typInput" class="typing-input"
@@ -657,11 +671,5 @@ html,body{background:var(--bg);min-height:100vh;font-family:var(--E);color:var(-
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="data.js"></script>
 <script src="app.js"></script>
-<script>
-  function toggleSidebar() {
-      const sidebar = document.querySelector('.sidebar');
-      sidebar.classList.toggle('active');
-  }
-</script>
 </body>
 </html>
