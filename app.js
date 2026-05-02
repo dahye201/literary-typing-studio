@@ -197,8 +197,22 @@ const LINE = 54;
 let currentUser = null;
 let isPremium   = false;
 
+/* ── localStorage helpers ── */
+const LS_KEY = 'lts_sessions';
+function loadLocalSessions() {
+  try {
+    const raw = localStorage.getItem(LS_KEY);
+    return raw ? JSON.parse(raw) : [];
+  } catch { return []; }
+}
+function saveLocalSessions() {
+  try {
+    localStorage.setItem(LS_KEY, JSON.stringify(sessions.slice(0, 100)));
+  } catch {}
+}
+
 /* Local session history (also synced to Supabase when logged in) */
-let sessions = [];
+let sessions = loadLocalSessions();
 let detIdx   = -1;
 
 /* ════════════════════════════════════════════════════════════
@@ -869,6 +883,7 @@ function finish() {
     text:       passage,
   };
   sessions.unshift(sess);
+  saveLocalSessions(); /* 로그인 여부 관계없이 브라우저에 저장 */
 
   /* Optionally persist to Supabase */
   if (currentUser) {
@@ -926,34 +941,52 @@ function showCompletionOverlay(wpm, acc, m, s, book, chapter) {
    MY PROGRESS
 ════════════════════════════════════════════════════════════ */
 async function rMy() {
-  if (!currentUser) {
-    document.getElementById('mpC').style.display = 'none';
-    document.getElementById('nlo').style.display  = 'block';
-    return;
-  }
-  document.getElementById('nlo').style.display  = 'none';
-  document.getElementById('mpC').style.display  = 'block';
-  document.getElementById('mpU').textContent    = currentUser.email;
+  const mpC = document.getElementById('mpC');
+  const nlo = document.getElementById('nlo');
 
-  /* Merge local + remote sessions */
-  const remote = await loadRemoteSessions(currentUser.id);
-  if (remote.length > 0) {
-    /* Map Supabase rows to local session shape */
-    const mapped = remote.map(r => ({
-      id:         r.id,
-      bookId:     r.book_id,
-      chapterIdx: r.chapter_idx,
-      pageIdx:    r.page_idx,
-      wpm:        r.wpm,
-      acc:        r.acc,
-      chars:      r.chars,
-      durMs:      r.dur_ms,
-      date:       new Date(r.created_at).toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' }),
-      title:      BOOKS.find(b => b.id === r.book_id)?.title || r.book_id,
-      author:     BOOKS.find(b => b.id === r.book_id)?.author || '',
-      text:       '',
-    }));
-    sessions = mapped;
+  if (!currentUser) {
+    /* 비로그인: 로컬 세션이 있으면 보여주고, 로그인 유도 배너만 상단에 표시 */
+    nlo.style.display = 'none';
+    mpC.style.display = 'block';
+    document.getElementById('mpU').textContent = 'Guest';
+
+    /* 로그인 유도 배너 (한 번만 삽입) */
+    if (!document.getElementById('guestBanner')) {
+      const banner = document.createElement('div');
+      banner.id = 'guestBanner';
+      banner.style.cssText = 'font-family:var(--E);font-size:9px;letter-spacing:.12em;color:var(--t3);border:1px solid var(--bd);padding:10px 14px;margin-bottom:18px;line-height:1.7';
+      banner.innerHTML = 'Your sessions are saved in this browser only. <button onclick="openOv('ovL')" style="font-family:var(--E);font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--gld);background:none;border:none;cursor:pointer;padding:0;text-decoration:underline">Sign in</button> to sync across devices.';
+      mpC.insertBefore(banner, mpC.firstChild);
+    }
+  } else {
+    /* 로그인: 배너 제거 */
+    const banner = document.getElementById('guestBanner');
+    if (banner) banner.remove();
+
+    nlo.style.display = 'none';
+    mpC.style.display = 'block';
+    document.getElementById('mpU').textContent = currentUser.email;
+
+    /* Merge local + remote sessions */
+    const remote = await loadRemoteSessions(currentUser.id);
+    if (remote.length > 0) {
+      const mapped = remote.map(r => ({
+        id:         r.id,
+        bookId:     r.book_id,
+        chapterIdx: r.chapter_idx,
+        pageIdx:    r.page_idx,
+        wpm:        r.wpm,
+        acc:        r.acc,
+        chars:      r.chars,
+        durMs:      r.dur_ms,
+        date:       new Date(r.created_at).toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' }),
+        title:      BOOKS.find(b => b.id === r.book_id)?.title || r.book_id,
+        author:     BOOKS.find(b => b.id === r.book_id)?.author || '',
+        text:       '',
+      }));
+      sessions = mapped;
+      saveLocalSessions();
+    }
   }
 
   const n  = sessions.length;
@@ -1021,6 +1054,7 @@ document.getElementById('dDl').addEventListener('click', async () => {
     await deleteRemoteSession(s.id);
   }
   sessions.splice(detIdx, 1);
+  saveLocalSessions();
   closeOv('ovD');
   rMy();
 });
