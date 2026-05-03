@@ -1084,52 +1084,50 @@ async function signInWithGoogle() {
   const authUrl = `${baseUrl}auth/v1/authorize?provider=google&redirect_to=https://lit-typing.com`;
   window.location.href = authUrl;
 }
-// 로그인 상태 확인 및 성공 메시지 (영어 버전)
 async function checkLoginStatus() {
+  // 1. 주소창에 토큰이 있는지 확인 (방금 로그인한 경우)
   const hash = window.location.hash;
   if (hash && hash.includes("access_token")) {
-      // 주소창 깔끔하게 정리
       history.replaceState(null, null, " ");
-      
-      // 영어 서비스에 맞춘 알림
-      alert("Login successful!"); 
-      
-      // 로그인 후 바로 작품 목록을 새로고침해서 자물쇠를 푸는 명령
-      if (typeof rl === 'function') rl();
+      alert("Login successful!");
+  }
+
+  // 2. 이미 로그인된 세션이 있는지 확인 (페이지 이동 시 필수!)
+  const { data: { session } } = await supabase.auth.getSession();
+  
+  if (session && session.user) {
+      // 로그인된 상태라면 네비게이션 버튼을 Logout으로 변경
+      const loginBtn = document.getElementById('loginBtn');
+      if (loginBtn) {
+          loginBtn.innerText = "Logout";
+          loginBtn.onclick = () => {
+              supabase.auth.signOut().then(() => location.reload());
+          };
+      }
   }
 }
-// 깃허브 로그인
-async function signInWithGithub() {
-  const baseUrl = SUPABASE_URL.endsWith('/') ? SUPABASE_URL : SUPABASE_URL + '/';
-  const authUrl = `${baseUrl}auth/v1/authorize?provider=github&redirect_to=https://lit-typing.com`;
-  window.location.href = authUrl;
-}
-
-// 페이스북 로그인
-async function signInWithFacebook() {
-  const baseUrl = SUPABASE_URL.endsWith('/') ? SUPABASE_URL : SUPABASE_URL + '/';
-  const authUrl = `${baseUrl}auth/v1/authorize?provider=facebook&redirect_to=https://lit-typing.com`;
-  window.location.href = authUrl;
-}
+//로그인 추가 밑으로 (페이스북, 엑스 등)
 
 // 스트라이프 연동 (공개 키는 스트라이프 대시보드 API Keys 메뉴에 있습니다)
-const stripe = Stripe('여기에_사장님의_Publishable_key_입력');
+const stripe = Stripe('pk_test_51TPODEPxBQOBPm3AlcMjDkTActaPiasB0BDR3O58FrM6ujeMRWAbHwPs1Vr8QYUY3BUIvrwj4htCCWF4yCbqqYj500I2kHr8S7');
 
 async function checkout() {
-    // 1. 로그인이 안 되어 있으면 결제 못 하게 막기
-    const user = (await supabase.auth.getUser()).data.user;
-    if (!user) {
-        alert("Please sign in first!");
-        return;
-    }
+  const { data: { session } } = await supabase.auth.getSession();
+  
+  if (!session) {
+      alert("로그인이 필요합니다. 로그인 창으로 이동합니다.");
+      signInWithGoogle(); // 팝업만 띄우지 말고 바로 로그인창으로 보내버리기!
+      return;
+  }
+
+  // 로그인 확인되면 바로 스트라이프 이동
+      window.location.href = "https://buy.stripe.com/test_5kQcN7c4y9ABePm5QY33W00";
+}
 
     // 2. 결제 페이지로 리다이렉트 (가장 쉬운 No-Code 결제 방식)
     // 실제로는 서버(Cloud Functions 등)를 거쳐 세션을 만들어야 보안상 완벽하지만,
     // 테스트용으로는 스트라이프의 'Payment Links' 기능을 버튼에 연결하는 게 제일 빠릅니다.
     
-    // 스트라이프 대시보드에서 만든 'Payment Link' 주소를 아래에 넣으세요.
-    window.location.href = "https://buy.stripe.com/test_사장님의_결제링크";
-}
 
 /* --- 로그인 및 인증 로직 추가 --- */
 
