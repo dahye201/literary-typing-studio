@@ -376,7 +376,7 @@ document.getElementById('socE').addEventListener('click', async () => {
       document.getElementById('bSI').textContent = currentUser.email.split('@')[0];
       isPremium = await checkIsPremium(currentUser.id);
       closeOv('ovL');
-      alert("로그인되었습니다!");
+      alert("Login successful!");
       
       // 사이드바 새로고침 (잠금 해제 반영)
       if (document.getElementById('sTw').classList.contains('on')) {
@@ -384,7 +384,7 @@ document.getElementById('socE').addEventListener('click', async () => {
       }
     }
   } catch (err) {
-    alert("오류가 발생했습니다: " + err.message);
+    alert("An error occurred: " + err.message);
   }
 });
 
@@ -1144,17 +1144,20 @@ document.getElementById('loginBtn')?.addEventListener('click', async () => {
 
 // 2. 로그인 상태 감시 엔진
 supabase.auth.onAuthStateChange(async (event, session) => {
-  const loginBtn = document.getElementById('loginBtn');
-  if (session) {
-      console.log("로그인 상태:", session.user.email);
-      if (loginBtn) loginBtn.innerText = "Logout";
-      
-      // 프리미엄 확인 (사장님이 아까 보여준 48번 줄 함수 활용)
-      const isPremium = await checkIsPremium(session.user.id);
-      console.log("프리미엄 여부:", isPremium);
-  } else {
-      console.log("로그아웃 상태");
-      if (loginBtn) loginBtn.innerText = "Login";
+  if (session && session.user) {
+    currentUser = session.user;
+    isPremium = await checkIsPremium(session.user.id);
+    const bSI = document.getElementById('bSI');
+    if (bSI) bSI.textContent = currentUser.email.split('@')[0];
+    // 챕터 잠금 상태 갱신
+    if (document.getElementById('sTw') && document.getElementById('sTw').classList.contains('on')) {
+      renderSidebar(curBook);
+    }
+  } else if (event === 'SIGNED_OUT') {
+    currentUser = null;
+    isPremium = false;
+    const bSI = document.getElementById('bSI');
+    if (bSI) bSI.textContent = 'Sign In';
   }
 });
 checkLoginStatus(); // 로그인 확인
