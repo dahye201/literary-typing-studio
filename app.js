@@ -93,10 +93,6 @@ function cleanText(str) {
     .replace(/\t/g, ' ')
     .split(/[ ]{2,}/)               // 공백이 두 번 이상인 곳을 기준으로 쪼갬
     .join(' ')                      // 다시 한 칸 공백으로 합침
-    .split('. ')                    // 마침표 뒤에 줄바꿈을 넣고 싶다면 이 로직 사용
-    .map(line => line.trim())       
-    .filter(line => line.length > 0)
-    .join('\n\n')                   // 문단(혹은 문장) 사이는 깔끔하게 두 줄씩
     .replace(/ +/g, ' ');           // 최종적으로 모든 연속 공백을 한 칸으로 통일
 }
 
@@ -222,7 +218,7 @@ let twAudio = null;
 function getTypewriterAudio() {
   if (!twAudio) {
     twAudio = new Audio('typewriter.mp3');
-    twAudio.volume = 0.85;
+    twAudio.volume = 1.0;
   }
   return twAudio;
 }
@@ -541,7 +537,6 @@ function rl() {
         <div class="bkpv">${preview}</div>
       </div>
       <div class="bksd">
-        <div class="bkyr">${b.year}</div>
         <div class="bkf">${b.chapters.length} ch.</div>
         <div class="bkar">&rarr;</div>
       </div>`;
