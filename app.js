@@ -1,12 +1,13 @@
 'use strict';
 
+const { createClient } = supabase;
 /* ════════════════════════════════════════════════════════════
    SUPABASE CONFIG
 ════════════════════════════════════════════════════════════ */
 const SUPABASE_URL      = 'https://ootavtvsojfugqbrevpb.supabase.co/';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9vdGF2dHZzb2pmdWdxYnJldnBiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY5NTA2NjQsImV4cCI6MjA5MjUyNjY2NH0.LWjIMMW_rX0hCALhn_-jQDGZrylHx0v_kRDP5teiWJU';
 
-// [수정] 뻑나던 supabase.createClient 줄을 삭제했습니다.
+const _supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 /* ── Supabase helpers (사장님 오리지널 방식) ── */
 async function sbGet(table, params = '') {
@@ -346,15 +347,15 @@ window.onload = async () => {
 
   // URL에 로그인 결과(access_token)가 포함되어 있는지 확인
   if (window.location.hash) {
-    console.log("구글 로그인 성공 데이터 감지!");
+    console.log("Google login data detected!");
     // 여기서 유저 정보를 가져오거나 처리하는 로직이 들어가면 됩니다.
   }
 };
 
 // 2. 이메일 가입/로그인 (socE 버튼)
 document.getElementById('socE').addEventListener('click', async () => {
-  const email = prompt("이메일을 입력하세요:");
-  const password = prompt("비밀번호를 입력하세요 (6자리 이상):");
+  const email = prompt("Please enter your email:");
+  const password = prompt("Please enter your password (at least 6 characters):");
 
   if (!email || !password) return;
 
@@ -1093,7 +1094,7 @@ async function checkLoginStatus() {
   }
 
   // 2. 이미 로그인된 세션이 있는지 확인 (페이지 이동 시 필수!)
-  const { data: { session } } = await supabase.auth.getSession();
+  const { data: { session } } = await _supabase.auth.getSession();
   
   if (session && session.user) {
       // 로그인된 상태라면 네비게이션 버튼을 Logout으로 변경
@@ -1101,7 +1102,7 @@ async function checkLoginStatus() {
       if (loginBtn) {
           loginBtn.innerText = "Logout";
           loginBtn.onclick = () => {
-              supabase.auth.signOut().then(() => location.reload());
+              _supabase.auth.signOut().then(() => location.reload());
           };
       }
   }
@@ -1112,7 +1113,7 @@ async function checkLoginStatus() {
 const stripe = Stripe('pk_test_51TPODEPxBQOBPm3AlcMjDkTActaPiasB0BDR3O58FrM6ujeMRWAbHwPs1Vr8QYUY3BUIvrwj4htCCWF4yCbqqYj500I2kHr8S7');
 
 async function checkout() {
-  const { data: { session } } = await supabase.auth.getSession();
+  const { data: { session } } = await _supabase.auth.getSession();
   
   if (!session) {
       alert("로그인이 필요합니다. 로그인 창으로 이동합니다.");
@@ -1133,7 +1134,7 @@ async function checkout() {
 
 // 1. 로그인/로그아웃 버튼 클릭 이벤트
 document.getElementById('loginBtn')?.addEventListener('click', async () => {
-  const { data, error } = await supabase.auth.signInWithOAuth({
+  const { data, error } = await _supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
           redirectTo: window.location.origin
@@ -1143,7 +1144,7 @@ document.getElementById('loginBtn')?.addEventListener('click', async () => {
 });
 
 // 2. 로그인 상태 감시 엔진
-sb.auth.onAuthStateChange(async (event, session) => {
+_supabase.auth.onAuthStateChange(async (event, session) => {
   if (session && session.user) {
     currentUser = session.user;
     isPremium = await checkIsPremium(session.user.id);
