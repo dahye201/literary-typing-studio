@@ -1076,7 +1076,6 @@ document.getElementById('dDl').addEventListener('click', async () => {
 ════════════════════════════════════════════════════════════ */
 rl();
 goScr('sLib');
-checkLoginStatus(); // 이 한 줄을 여기에 추가!
 
 
 // 구글 로그인 기능 추가
@@ -1131,3 +1130,33 @@ async function checkout() {
     // 스트라이프 대시보드에서 만든 'Payment Link' 주소를 아래에 넣으세요.
     window.location.href = "https://buy.stripe.com/test_사장님의_결제링크";
 }
+
+/* --- 로그인 및 인증 로직 추가 --- */
+
+// 1. 로그인/로그아웃 버튼 클릭 이벤트
+document.getElementById('loginBtn')?.addEventListener('click', async () => {
+  const { data, error } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+          redirectTo: window.location.origin
+      }
+  });
+  if (error) console.error("로그인 에러:", error.message);
+});
+
+// 2. 로그인 상태 감시 엔진
+supabase.auth.onAuthStateChange(async (event, session) => {
+  const loginBtn = document.getElementById('loginBtn');
+  if (session) {
+      console.log("로그인 상태:", session.user.email);
+      if (loginBtn) loginBtn.innerText = "Logout";
+      
+      // 프리미엄 확인 (사장님이 아까 보여준 48번 줄 함수 활용)
+      const isPremium = await checkIsPremium(session.user.id);
+      console.log("프리미엄 여부:", isPremium);
+  } else {
+      console.log("로그아웃 상태");
+      if (loginBtn) loginBtn.innerText = "Login";
+  }
+});
+checkLoginStatus(); // 로그인 확인
