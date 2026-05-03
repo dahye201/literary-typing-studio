@@ -1143,7 +1143,7 @@ document.getElementById('loginBtn')?.addEventListener('click', async () => {
 });
 
 // 2. 로그인 상태 감시 엔진
-supabase.auth.onAuthStateChange(async (event, session) => {
+sb.auth.onAuthStateChange(async (event, session) => {
   if (session && session.user) {
     currentUser = session.user;
     isPremium = await checkIsPremium(session.user.id);
