@@ -955,7 +955,7 @@ async function rMy() {
       const banner = document.createElement('div');
       banner.id = 'guestBanner';
       banner.style.cssText = 'font-family:var(--E);font-size:9px;letter-spacing:.12em;color:var(--t3);border:1px solid var(--bd);padding:10px 14px;margin-bottom:18px;line-height:1.7';
-      banner.innerHTML = 'Your sessions are saved in this browser only. <button onclick="openOv(`ovL`)" style="font-family:var(--E);font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--gld);background:none;border:none;cursor:pointer;padding:0;text-decoration:underline">Sign in</button> to sync across devices.';
+      banner.innerHTML = 'Your sessions are saved in this browser only. <button onclick="openOv(\`ovL\`)" style="font-family:var(--E);font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--gld);background:none;border:none;cursor:pointer;padding:0;text-decoration:underline">Sign in</button> to sync across devices.';
       mpC.insertBefore(banner, mpC.firstChild);
     }
   } else {
