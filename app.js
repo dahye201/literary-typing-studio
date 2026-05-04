@@ -312,16 +312,16 @@ function goScr(id) {
   document.getElementById(id).classList.add('on');
 }
 
-document.getElementById('bLogo')   .addEventListener('click', () => { goScr('sLib'); rl(); });
-document.getElementById('bLib')    .addEventListener('click', () => { goScr('sLib'); rl(); });
-document.getElementById('bProg')   .addEventListener('click', () => { goScr('sMy');  rMy(); });
-document.getElementById('bSI')     .addEventListener('click', () => openOv('ovL'));
-document.getElementById('bCof')    .addEventListener('click', () => openOv('ovC'));
-document.getElementById('bAbout')  .addEventListener('click', () => openOv('ovAb'));
-document.getElementById('bPriv')   .addEventListener('click', () => openOv('ovPr'));
+document.getElementById('bLogo')?.addEventListener('click', () => { goScr('sLib'); rl(); });
+document.getElementById('bLib')?.addEventListener('click', () => { goScr('sLib'); rl(); });
+document.getElementById('bProg')?.addEventListener('click', () => { goScr('sMy');  rMy(); });
+document.getElementById('bSI')?.addEventListener('click', () => openOv('ovL'));
+document.getElementById('bCof')?.addEventListener('click', () => openOv('ovC'));
+document.getElementById('bAbout')?.addEventListener('click', () => openOv('ovAb'));
+document.getElementById('bPriv')?.addEventListener('click', () => openOv('ovPr'));
 document.getElementById('bFootCof')?.addEventListener('click', e => { e.preventDefault(); openOv('ovC'); });
 document.getElementById('premLogin')?.addEventListener('click', () => { closeOv('ovP'); openOv('ovL'); });
-document.getElementById('mySI')    .addEventListener('click', () => openOv('ovL'));
+document.getElementById('mySI')?.addEventListener('click', () => openOv('ovL'));
 
 /* Back button inside sidebar → return to library */
 document.getElementById('sbBack')?.addEventListener('click', () => {
@@ -692,8 +692,8 @@ const typDisp  = document.getElementById('typDisp');
 
 function focusInput() { typInput.focus({ preventScroll: true }); }
 
-document.getElementById('ppEl')  .addEventListener('click', focusInput);
-document.getElementById('kb')    .addEventListener('click', focusInput);
+document.getElementById('ppEl')?.addEventListener('click', focusInput);
+document.getElementById('kb')?.addEventListener('click', focusInput);
 document.getElementById('hintEl')?.addEventListener('click', focusInput);
 
 let lastSndT = 0;
