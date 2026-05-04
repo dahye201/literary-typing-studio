@@ -1193,7 +1193,22 @@ _supabase.auth.onAuthStateChange(async (event, session) => {
     updateNavForUser(null);
   }
 });
-checkLoginStatus(); // 로그인 확인
+// 구글 OAuth 리디렉션 후 세션 처리
+if (window.location.hash && window.location.hash.includes('access_token')) {
+  _supabase.auth.getSession().then(({ data: { session } }) => {
+    if (session && session.user) {
+      currentUser = session.user;
+      checkIsPremium(session.user.id).then(premium => {
+        isPremium = premium;
+        updateNavForUser(currentUser);
+      });
+      // 해시 제거 (URL 정리)
+      history.replaceState(null, '', window.location.pathname);
+    }
+  });
+} else {
+  checkLoginStatus();
+}
 initLogin();
 // 2. 페이지 로드 시 로그인 상태인지 확인하는 함수
 async function checkUser() {
