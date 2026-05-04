@@ -2173,7 +2173,9 @@
       <footer class="lft">
         <button class="fl" id="bAbout">About</button>
         <div class="fdot"></div>
-        <button class="fl" id="bPriv">Privacy Policy</button>
+        <a class="fl" href="/privacy" target="_blank">Privacy Policy</a>
+        <div class="fdot"></div>
+        <a class="fl" href="/terms" target="_blank">Terms of Service</a>
         <div class="fdot"></div>
         <a class="fl g" href="#" id="bFootCof">Buy Me a Coffee</a>
       </footer>
@@ -2202,7 +2204,7 @@
             <hr>
             <div onclick="location.href='/progress'"> Progress</div>
             <div onclick="location.href='/support'"> Support</div>
-            <div onclick="location.href='/login'"> Sign In</div>
+            <div onclick="openOv('ovL')" style="cursor:pointer"> Sign In</div>
           </div>
         </aside>
 
@@ -2372,7 +2374,7 @@
         <button class="mx" data-c="ovL">[close]</button>
         <span class="mh">Literary Typing Studio</span>
         <p class="ms">Sign in to save your progress</p>
-        <button onclick="signInWithGoogle()" class="soc" id="loginBtn">
+        <button onclick="signInWithGoogle()" class="soc" id="loginBtn" style="display:none;">
           <svg width="16" height="16" viewBox="0 0 18 18">
             <path fill="#4285F4"
               d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.875 2.684-6.615z" />

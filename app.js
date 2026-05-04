@@ -330,29 +330,7 @@ document.getElementById('sbBack').addEventListener('click', () => {
 
 /* ── 실제 Supabase 가입/로그인 연결 ── */
 
-// 1. 구글 로그인 버튼을 눌렀을 때 실행될 함수
-async function signInWithGoogle() {
-  // 사장님이 설정한 SUPABASE_URL과 ANON_KEY를 그대로 사용합니다.
-  // 이 주소는 구글 로그인창으로 바로 쏴주는 주소예요.
-  const authUrl = `${SUPABASE_URL}/auth/v1/authorize?provider=google&redirect_to=https://lit-typing.com`;
-  
-  // 페이지 이동! (복잡한 SDK 명령 대신 그냥 주소로 보내버리는 겁니다)
-  window.location.href = authUrl;
-}
-
-// 2. 페이지 로드 시 로그인 상태인지 확인 (기존 onload 안에 합치세요)
-window.onload = async () => {
-  // 작품 로딩은 기존에 쓰시던 sbGet이나 works 배열 사용 코드를 그대로 두세요!
-  // 예: renderWorks(); 
-
-  // URL에 로그인 결과(access_token)가 포함되어 있는지 확인
-  if (window.location.hash) {
-    console.log("Google login data detected!");
-    // 여기서 유저 정보를 가져오거나 처리하는 로직이 들어가면 됩니다.
-  }
-};
-
-// 2. 이메일 가입/로그인 (socE 버튼)
+// 이메일 가입/로그인 (socE 버튼)
 document.getElementById('socE').addEventListener('click', async () => {
   const email = prompt("Please enter your email:");
   const password = prompt("Please enter your password (at least 6 characters):");
@@ -361,11 +339,11 @@ document.getElementById('socE').addEventListener('click', async () => {
 
   try {
     // 가입 시도
-    let { data, error } = await sb.auth.signUp({ email, password });
+    let { data, error } = await _supabase.auth.signUp({ email, password });
 
     // 이미 가입된 계정이면 바로 로그인 시도
     if (error && error.message.includes('already registered')) {
-      const { data: lData, error: lError } = await sb.auth.signInWithPassword({ email, password });
+      const { data: lData, error: lError } = await _supabase.auth.signInWithPassword({ email, password });
       data = lData;
       error = lError;
     }
@@ -374,8 +352,8 @@ document.getElementById('socE').addEventListener('click', async () => {
 
     if (data.user) {
       currentUser = data.user;
-      document.getElementById('bSI').textContent = currentUser.email.split('@')[0];
       isPremium = await checkIsPremium(currentUser.id);
+      updateNavForUser(currentUser);
       closeOv('ovL');
       alert("Login successful!");
       
@@ -474,12 +452,11 @@ function renderSidebar(bookIdx) {
     row.appendChild(numEl);
     row.appendChild(labelEl);
     row.appendChild(badgeEl);
-
     row.addEventListener('click', () => {
       if (locked) {
-        openOv('ovP');
-        return;
-      }
+          checkout(); // 우리가 바꾼 결제 함수
+          return;     // 여기서 멈춤
+      }ㄴ
       loadPage(bookIdx, ci, 0);
     });
 
@@ -1086,16 +1063,17 @@ async function signInWithGoogle() {
   window.location.href = authUrl;
 }
 async function checkLoginStatus() {
-  // 1. 주소창에 토큰이 있는지 확인 (방금 로그인한 경우)
-  const hash = window.location.hash;
-  if (hash && hash.includes("access_token")) {
-      history.replaceState(null, null, " ");
-      alert("Login successful!");
+  const { data: { session } } = await _supabase.auth.getSession();
+  if (session && session.user) {
+    currentUser = session.user;
+    isPremium = await checkIsPremium(session.user.id);
+    updateNavForUser(currentUser);
   }
+}
 
   // 2. 이미 로그인된 세션이 있는지 확인 (페이지 이동 시 필수!)
+  async function initLogin() {
   const { data: { session } } = await _supabase.auth.getSession();
-  
   if (session && session.user) {
       // 로그인된 상태라면 네비게이션 버튼을 Logout으로 변경
       const loginBtn = document.getElementById('loginBtn');
@@ -1107,24 +1085,20 @@ async function checkLoginStatus() {
       }
   }
 }
+
 //로그인 추가 밑으로 (페이스북, 엑스 등)
 
 // 스트라이프 연동 (공개 키는 스트라이프 대시보드 API Keys 메뉴에 있습니다)
 const stripe = Stripe('pk_test_51TPODEPxBQOBPm3AlcMjDkTActaPiasB0BDR3O58FrM6ujeMRWAbHwPs1Vr8QYUY3BUIvrwj4htCCWF4yCbqqYj500I2kHr8S7');
 
 async function checkout() {
-  const { data: { session } } = await _supabase.auth.getSession();
-  
-  if (!session) {
-      alert("로그인이 필요합니다. 로그인 창으로 이동합니다.");
-      signInWithGoogle(); // 팝업만 띄우지 말고 바로 로그인창으로 보내버리기!
-      return;
+  if (!currentUser) {
+    closeOv('ovP');
+    openOv('ovL');
+    return;
   }
-
-  // 로그인 확인되면 바로 스트라이프 이동
-      window.location.href = "https://buy.stripe.com/test_5kQcN7c4y9ABePm5QY33W00";
+  window.location.href = "https://buy.stripe.com/test_5kQcN7c4y9ABePm5QY33W00";
 }
-
     // 2. 결제 페이지로 리다이렉트 (가장 쉬운 No-Code 결제 방식)
     // 실제로는 서버(Cloud Functions 등)를 거쳐 세션을 만들어야 보안상 완벽하지만,
     // 테스트용으로는 스트라이프의 'Payment Links' 기능을 버튼에 연결하는 게 제일 빠릅니다.
@@ -1143,13 +1117,72 @@ document.getElementById('loginBtn')?.addEventListener('click', async () => {
   if (error) console.error("로그인 에러:", error.message);
 });
 
+/* ── 아바타 UI 업데이트 ── */
+function updateNavForUser(user) {
+  const bProg = document.getElementById('bProg');
+  const bSI   = document.getElementById('bSI');
+  if (!bProg || !bSI) return;
+  if (user) {
+    const initial = user.email.charAt(0).toUpperCase();
+    bProg.style.display = 'none';
+    bSI.style.display   = 'none';
+    let av = document.getElementById('navAvatar');
+    if (!av) {
+      av = document.createElement('div');
+      av.id = 'navAvatar';
+      av.style.cssText = 'width:30px;height:30px;border-radius:50%;background:#c8a870;display:flex;align-items:center;justify-content:center;font-family:var(--E);font-size:11px;font-weight:500;color:#1c1a17;cursor:pointer;flex-shrink:0;position:relative;user-select:none;';
+      av.textContent = initial;
+      av.addEventListener('click', toggleAvatarDropdown);
+      bSI.parentNode.appendChild(av);
+    } else {
+      av.textContent = initial;
+      av.style.display = 'flex';
+    }
+  } else {
+    const av = document.getElementById('navAvatar');
+    if (av) av.style.display = 'none';
+    const dd = document.getElementById('navDropdown');
+    if (dd) dd.style.display = 'none';
+    const bProg = document.getElementById('bProg');
+    const bSI   = document.getElementById('bSI');
+    if (bProg) bProg.style.display = '';
+    if (bSI)   { bSI.style.display = ''; bSI.textContent = 'Sign In'; }
+  }
+}
+
+function toggleAvatarDropdown() {
+  let dd = document.getElementById('navDropdown');
+  if (!dd) {
+    dd = document.createElement('div');
+    dd.id = 'navDropdown';
+    dd.style.cssText = 'position:fixed;right:28px;top:50px;background:#242018;border:1px solid #3a3530;width:190px;z-index:9999;';
+    dd.innerHTML = `
+      <div style="padding:10px 16px;border-bottom:1px solid #3a3530;">
+        <div style="font-family:var(--E);font-size:8px;color:#888070;letter-spacing:.1em;">SIGNED IN AS</div>
+        <div style="font-family:var(--E);font-size:10px;color:#c8c0a8;margin-top:4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${currentUser ? currentUser.email : ''}</div>
+      </div>
+      <div id="ddProgress" style="padding:9px 16px;font-family:var(--E);font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:#c8c0a8;cursor:pointer;">Progress</div>
+      <div id="ddSignOut" style="padding:9px 16px;font-family:var(--E);font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:#c87070;cursor:pointer;border-top:1px solid #3a3530;">Sign Out</div>
+    `;
+    document.body.appendChild(dd);
+    document.getElementById('ddProgress').addEventListener('click', () => { closeDropdown(); goScr('sMy'); rMy(); });
+    document.getElementById('ddSignOut').addEventListener('click', async () => { closeDropdown(); await _supabase.auth.signOut(); });
+    document.addEventListener('click', (e) => { if (!e.target.closest('#navAvatar') && !e.target.closest('#navDropdown')) closeDropdown(); });
+  }
+  dd.style.display = dd.style.display === 'none' ? 'block' : 'none';
+}
+
+function closeDropdown() {
+  const dd = document.getElementById('navDropdown');
+  if (dd) dd.style.display = 'none';
+}
+
 // 2. 로그인 상태 감시 엔진
 _supabase.auth.onAuthStateChange(async (event, session) => {
   if (session && session.user) {
     currentUser = session.user;
     isPremium = await checkIsPremium(session.user.id);
-    const bSI = document.getElementById('bSI');
-    if (bSI) bSI.textContent = currentUser.email.split('@')[0];
+    updateNavForUser(currentUser);
     // 챕터 잠금 상태 갱신
     if (document.getElementById('sTw') && document.getElementById('sTw').classList.contains('on')) {
       renderSidebar(curBook);
@@ -1157,8 +1190,29 @@ _supabase.auth.onAuthStateChange(async (event, session) => {
   } else if (event === 'SIGNED_OUT') {
     currentUser = null;
     isPremium = false;
-    const bSI = document.getElementById('bSI');
-    if (bSI) bSI.textContent = 'Sign In';
+    updateNavForUser(null);
   }
 });
 checkLoginStatus(); // 로그인 확인
+initLogin();
+// 2. 페이지 로드 시 로그인 상태인지 확인하는 함수
+async function checkUser() {
+  const { data: { session } } = await _supabase.auth.getSession();
+  
+  if (session && session.user) {
+      console.log("로그인 성공 상태:", session.user.email);
+      // 화면의 로그인 버튼을 Logout으로 바꿉니다.
+      const loginBtn = document.getElementById('loginBtn');
+      if (loginBtn) {
+          loginBtn.innerText = "Logout";
+          // 로그아웃 기능 연결
+          loginBtn.onclick = async () => {
+              await _supabase.auth.signOut();
+              location.reload();
+          };
+      }
+  }
+}
+
+// 이 함수를 즉시 실행시킵니다.
+checkUser();
