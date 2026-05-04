@@ -285,7 +285,7 @@ function playReturn() {
   } catch { animRet(); }
 }
 
-document.getElementById('sndBtn').addEventListener('click', function () {
+document.getElementById('sndBtn')?.addEventListener('click', function () {
   soundOn = !soundOn;
   this.textContent = soundOn ? 'Sound On' : 'Sound Off';
   this.className   = 'snd' + (soundOn ? ' on' : '');
@@ -319,19 +319,19 @@ document.getElementById('bSI')     .addEventListener('click', () => openOv('ovL'
 document.getElementById('bCof')    .addEventListener('click', () => openOv('ovC'));
 document.getElementById('bAbout')  .addEventListener('click', () => openOv('ovAb'));
 document.getElementById('bPriv')   .addEventListener('click', () => openOv('ovPr'));
-document.getElementById('bFootCof').addEventListener('click', e => { e.preventDefault(); openOv('ovC'); });
-document.getElementById('premLogin').addEventListener('click', () => { closeOv('ovP'); openOv('ovL'); });
+document.getElementById('bFootCof')?.addEventListener('click', e => { e.preventDefault(); openOv('ovC'); });
+document.getElementById('premLogin')?.addEventListener('click', () => { closeOv('ovP'); openOv('ovL'); });
 document.getElementById('mySI')    .addEventListener('click', () => openOv('ovL'));
 
 /* Back button inside sidebar → return to library */
-document.getElementById('sbBack').addEventListener('click', () => {
+document.getElementById('sbBack')?.addEventListener('click', () => {
   toggleSidebar();
 });
 
 /* ── 실제 Supabase 가입/로그인 연결 ── */
 
 // 이메일 가입/로그인 (socE 버튼)
-document.getElementById('socE').addEventListener('click', async () => {
+document.getElementById('socE')?.addEventListener('click', async () => {
   const email = prompt("Please enter your email:");
   const password = prompt("Please enter your password (at least 6 characters):");
 
@@ -368,11 +368,11 @@ document.getElementById('socE').addEventListener('click', async () => {
 });
 
 /* Completion overlay buttons */
-document.getElementById('doneLibBtn').addEventListener('click', () => {
+document.getElementById('doneLibBtn')?.addEventListener('click', () => {
   document.getElementById('doneOv').classList.remove('show');
   goScr('sLib'); rl();
 });
-document.getElementById('doneRetypeBtn').addEventListener('click', () => {
+document.getElementById('doneRetypeBtn')?.addEventListener('click', () => {
   document.getElementById('doneOv').classList.remove('show');
   loadPage(curBook, curChapter, curPg);
 });
@@ -380,11 +380,11 @@ document.getElementById('doneRetypeBtn').addEventListener('click', () => {
 /* ════════════════════════════════════════════════════════════
    PAGE NAV BUTTONS  (Prev / Next within current chapter)
 ════════════════════════════════════════════════════════════ */
-document.getElementById('prevPg').addEventListener('click', () => {
+document.getElementById('prevPg')?.addEventListener('click', () => {
   if (curPg > 0) loadPage(curBook, curChapter, curPg - 1);
 });
 
-document.getElementById('nextPg').addEventListener('click', () => {
+document.getElementById('nextPg')?.addEventListener('click', () => {
   tryNextPage();
 });
 
@@ -694,7 +694,7 @@ function focusInput() { typInput.focus({ preventScroll: true }); }
 
 document.getElementById('ppEl')  .addEventListener('click', focusInput);
 document.getElementById('kb')    .addEventListener('click', focusInput);
-document.getElementById('hintEl').addEventListener('click', focusInput);
+document.getElementById('hintEl')?.addEventListener('click', focusInput);
 
 let lastSndT = 0;
 
@@ -1010,7 +1010,7 @@ function openDet(i) {
   openOv('ovD');
 }
 
-document.getElementById('dRt').addEventListener('click', () => {
+document.getElementById('dRt')?.addEventListener('click', () => {
   if (detIdx < 0) return;
   const s  = sessions[detIdx];
   const gi = BOOKS.findIndex(b => b.id === s.bookId);
@@ -1020,7 +1020,7 @@ document.getElementById('dRt').addEventListener('click', () => {
   }
 });
 
-document.getElementById('dDl').addEventListener('click', async () => {
+document.getElementById('dDl')?.addEventListener('click', async () => {
   if (detIdx < 0) return;
   const s = sessions[detIdx];
   if (currentUser && s.id) {
@@ -1165,8 +1165,8 @@ function toggleAvatarDropdown() {
       <div id="ddSignOut" style="padding:9px 16px;font-family:var(--E);font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:#c87070;cursor:pointer;border-top:1px solid #3a3530;">Sign Out</div>
     `;
     document.body.appendChild(dd);
-    document.getElementById('ddProgress').addEventListener('click', () => { closeDropdown(); goScr('sMy'); rMy(); });
-    document.getElementById('ddSignOut').addEventListener('click', async () => { closeDropdown(); await _supabase.auth.signOut(); });
+    document.getElementById('ddProgress')?.addEventListener('click', () => { closeDropdown(); goScr('sMy'); rMy(); });
+    document.getElementById('ddSignOut')?.addEventListener('click', async () => { closeDropdown(); await _supabase.auth.signOut(); });
     document.addEventListener('click', (e) => { if (!e.target.closest('#navAvatar') && !e.target.closest('#navDropdown')) closeDropdown(); });
   }
   dd.style.display = dd.style.display === 'none' ? 'block' : 'none';
