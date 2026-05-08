@@ -1222,17 +1222,24 @@ _supabase.auth.onAuthStateChange(async (event, session) => {
 });
 
 // 2. 구글 리디렉션 후 처리 및 초기 체크를 합친 함수
+// 1225번 줄부터 1237번 줄까지 교체
 async function initApp() {
-  // URL에 토큰이 있는지 확인 (리디렉션 직후인지)
-  if (window.location.hash && window.location.hash.includes('access_token')) {
-      const { data: { session } } = await _supabase.auth.getSession();
-      if (session) {
-          // 해시 제거 (URL 깔끔하게 정리)
+  const { data: { session } } = await _supabase.auth.getSession();
+
+  if (session) {
+      // 1. 로그인 버튼 글자 바꾸기
+      const loginBtn = document.getElementById('loginBtn');
+      if (loginBtn) {
+          loginBtn.textContent = 'Logout';
+      }
+      
+      // 2. URL 깔끔하게 정리 (#token 제거)
+      if (window.location.hash.includes('access_token')) {
           history.replaceState(null, '', window.location.pathname);
       }
+      console.log("로그인 성공!", session.user.email);
   } else {
-      // 리디렉션이 아닐 때 일반적인 접속 시 세션 체크
-      await _supabase.auth.getSession();
+      console.log("로그인 정보 없음");
   }
 }
 
