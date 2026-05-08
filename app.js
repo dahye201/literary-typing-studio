@@ -1,5 +1,6 @@
 'use strict';
 
+window.signInWithGoogle = signInWithGoogle;
 const { createClient } = supabase;
 /* ════════════════════════════════════════════════════════════
    SUPABASE CONFIG
@@ -456,7 +457,7 @@ function renderSidebar(bookIdx) {
       if (locked) {
           checkout(); // 우리가 바꾼 결제 함수
           return;     // 여기서 멈춤
-      }ㄴ
+      }
       loadPage(bookIdx, ci, 0);
     });
 
@@ -1056,18 +1057,30 @@ rl();
 goScr('sLib');
 
 
-// 구글 로그인 기능 추가
-async function signInWithGoogle() {
-  const baseUrl = SUPABASE_URL.endsWith('/') ? SUPABASE_URL : SUPABASE_URL + '/';
-  const authUrl = `${baseUrl}auth/v1/authorize?provider=google&redirect_to=https://lit-typing.com`;
-  window.location.href = authUrl;
-}
 async function checkLoginStatus() {
   const { data: { session } } = await _supabase.auth.getSession();
+  
   if (session && session.user) {
+    console.log("로그인 성공 상태:", session.user.email);
     currentUser = session.user;
-    isPremium = await checkIsPremium(session.user.id);
+    
+    // 프리미엄 여부 확인 (있다면)
+    if (typeof checkIsPremium === 'function') {
+      isPremium = await checkIsPremium(session.user.id);
+    }
+
+    // UI 업데이트 (네비게이션 바 등)
     updateNavForUser(currentUser);
+
+    // 버튼을 Logout으로 변경
+    const loginBtn = document.getElementById('loginBtn');
+    if (loginBtn) {
+      loginBtn.innerText = "Logout";
+      loginBtn.onclick = async () => {
+        await _supabase.auth.signOut();
+        location.reload();
+      };
+    }
   }
 }
 
@@ -1120,36 +1133,47 @@ document.getElementById('loginBtn')?.addEventListener('click', async () => {
 /* ── 아바타 UI 업데이트 ── */
 function updateNavForUser(user) {
   const bProg = document.getElementById('bProg');
-  const bSI   = document.getElementById('bSI');
+  const bSI = document.getElementById('bSI');
   if (!bProg || !bSI) return;
+
   if (user) {
-    const initial = user.email.charAt(0).toUpperCase();
-    bProg.style.display = 'none';
-    bSI.style.display   = 'none';
-    let av = document.getElementById('navAvatar');
-    if (!av) {
-      av = document.createElement('div');
-      av.id = 'navAvatar';
-      av.style.cssText = 'width:30px;height:30px;border-radius:50%;background:#c8a870;display:flex;align-items:center;justify-content:center;font-family:var(--E);font-size:11px;font-weight:500;color:#1c1a17;cursor:pointer;flex-shrink:0;position:relative;user-select:none;';
-      av.textContent = initial;
-      av.addEventListener('click', toggleAvatarDropdown);
-      bSI.parentNode.appendChild(av);
-    } else {
-      av.textContent = initial;
-      av.style.display = 'flex';
-    }
+      // 로그인 성공 시
+      const initial = user.email.charAt(0).toUpperCase();
+      bProg.style.display = 'none';
+      bSI.textContent = 'Logout';
+      bSI.style.display = 'flex';
+      bSI.onclick = async () => {
+          await _supabase.auth.signOut();
+          location.reload();
+      };
+
+      // 아바타 생성
+      let av = document.getElementById('navAvatar');
+      if (!av) {
+          av = document.createElement('div');
+          av.id = 'navAvatar';
+          av.style.cssText = 'width:30px;height:30px;border-radius:50%;background:#c8a870;display:flex;align-items:center;justify-content:center;font-family:var(--E);font-size:11px;font-weight:bold;cursor:pointer;margin-left:10px;';
+          av.textContent = initial;
+          av.addEventListener('click', toggleAvatarDropdown);
+          bSI.parentNode.appendChild(av);
+      } else {
+          av.textContent = initial;
+          av.style.display = 'flex';
+      }
   } else {
-    const av = document.getElementById('navAvatar');
-    if (av) av.style.display = 'none';
-    const dd = document.getElementById('navDropdown');
-    if (dd) dd.style.display = 'none';
-    const bProg = document.getElementById('bProg');
-    const bSI   = document.getElementById('bSI');
-    if (bProg) bProg.style.display = '';
-    if (bSI)   { bSI.style.display = ''; bSI.textContent = 'Sign In'; }
+      // 로그아웃 상태 시
+      const av = document.getElementById('navAvatar');
+      if (av) av.style.display = 'none';
+      
+      const dd = document.getElementById('navDropdown');
+      if (dd) dd.style.display = 'none';
+      
+      bProg.style.display = 'flex';
+      bSI.style.display = 'flex';
+      bSI.textContent = 'Sign In';
+      bSI.onclick = () => openOv('ovL');
   }
 }
-
 function toggleAvatarDropdown() {
   let dd = document.getElementById('navDropdown');
   if (!dd) {
@@ -1177,57 +1201,49 @@ function closeDropdown() {
   if (dd) dd.style.display = 'none';
 }
 
-// 2. 로그인 상태 감시 엔진
+// 1. 로그인 상태 실시간 감시 엔진 (이것만 있으면 충분합니다)
 _supabase.auth.onAuthStateChange(async (event, session) => {
   if (session && session.user) {
-    currentUser = session.user;
-    isPremium = await checkIsPremium(session.user.id);
-    updateNavForUser(currentUser);
-    // 챕터 잠금 상태 갱신
-    if (document.getElementById('sTw') && document.getElementById('sTw').classList.contains('on')) {
-      renderSidebar(curBook);
-    }
+      console.log("로그인 성공!", session.user.email);
+      currentUser = session.user;
+      isPremium = await checkIsPremium(session.user.id);
+      updateNavForUser(currentUser); // 여기서 Logout 버튼으로 바뀜
+
+      // 챕터 목록이 열려있다면 새로고침
+      const sidebar = document.getElementById('sTw');
+      if (sidebar && sidebar.classList.contains('on')) {
+          renderSidebar(curBook);
+      }
   } else if (event === 'SIGNED_OUT') {
-    currentUser = null;
-    isPremium = false;
-    updateNavForUser(null);
+      currentUser = null;
+      isPremium = false;
+      updateNavForUser(null);
   }
 });
-// 구글 OAuth 리디렉션 후 세션 처리
-if (window.location.hash && window.location.hash.includes('access_token')) {
-  _supabase.auth.getSession().then(({ data: { session } }) => {
-    if (session && session.user) {
-      currentUser = session.user;
-      checkIsPremium(session.user.id).then(premium => {
-        isPremium = premium;
-        updateNavForUser(currentUser);
-      });
-      // 해시 제거 (URL 정리)
-      history.replaceState(null, '', window.location.pathname);
-    }
-  });
-} else {
-  checkLoginStatus();
-}
-initLogin();
-// 2. 페이지 로드 시 로그인 상태인지 확인하는 함수
-async function checkUser() {
-  const { data: { session } } = await _supabase.auth.getSession();
-  
-  if (session && session.user) {
-      console.log("로그인 성공 상태:", session.user.email);
-      // 화면의 로그인 버튼을 Logout으로 바꿉니다.
-      const loginBtn = document.getElementById('loginBtn');
-      if (loginBtn) {
-          loginBtn.innerText = "Logout";
-          // 로그아웃 기능 연결
-          loginBtn.onclick = async () => {
-              await _supabase.auth.signOut();
-              location.reload();
-          };
+
+// 2. 구글 리디렉션 후 처리 및 초기 체크를 합친 함수
+async function initApp() {
+  // URL에 토큰이 있는지 확인 (리디렉션 직후인지)
+  if (window.location.hash && window.location.hash.includes('access_token')) {
+      const { data: { session } } = await _supabase.auth.getSession();
+      if (session) {
+          // 해시 제거 (URL 깔끔하게 정리)
+          history.replaceState(null, '', window.location.pathname);
       }
+  } else {
+      // 리디렉션이 아닐 때 일반적인 접속 시 세션 체크
+      await _supabase.auth.getSession();
   }
 }
 
-// 이 함수를 즉시 실행시킵니다.
-checkUser();
+initApp(); // 앱 시작!
+async function signInWithGoogle() {
+  console.log("구글 로그인 버튼 클릭됨!"); 
+  const { data, error } = await _supabase.auth.signInWithOAuth({
+    provider: 'google',
+    options: {
+      redirectTo: window.location.origin 
+    }
+  });
+  if (error) console.error("로그인 에러 발생:", error.message);
+}
