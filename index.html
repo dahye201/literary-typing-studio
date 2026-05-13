@@ -179,8 +179,9 @@
         padding: 5px 0;
       }
 
-      /* 라이브러리 카드 모바일 */
-      .bkl { padding: 16px 14px; }
+      /* 라이브러리 모바일 — 카드 너비를 검색창과 동일하게 */
+      .lb { padding: 20px 16px 0; }
+      .bkl { padding: 0; margin-bottom: 12px; }
       .bksd { flex-shrink: 0; }
 
       /* 종이 모바일 */
@@ -190,19 +191,30 @@
       /* 타이핑 디스플레이 */
       .typing-display { font-size: 13px; line-height: 1.9; }
 
-      /* stats bar */
+      /* stats bar — 두 줄, 버튼 오른쪽 정렬 */
       .tws {
-        padding: 7px 10px;
-        flex-wrap: wrap;
-        gap: 4px 0;
+        padding: 7px 14px 6px;
+        flex-direction: column;
+      }
+      .tws-row1 {
+        width: 100%;
+        display: flex;
+        align-items: center;
+      }
+      .tws-row2 {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        gap: 6px;
+        margin-top: 5px;
       }
       .sb2 { margin-right: 10px; }
       .sv  { font-size: 16px; }
-      .sep { margin-right: 10px; height: 22px; }
-      .sr  { gap: 5px; }
-      .chapter-toggle-btn { width: 82px; font-size: 8px; padding: 4px 0; }
-      .snd { width: 74px; font-size: 8px; padding: 4px 0; }
-      .ip  { display: none; }
+      .sep { margin-right: 10px; height: 20px; }
+      .chapter-toggle-btn { width: 90px; font-size: 8px; padding: 5px 0; }
+      .snd { width: 80px; font-size: 8px; padding: 5px 0; }
+      .ip  { display: none !important; }
       .pnb { padding: 6px 10px; }
 
       .logo {
@@ -770,11 +782,26 @@
     /* ── STATS BAR ── */
     .tws {
       display: flex;
-      align-items: center;
-      padding: 9px 28px;
+      flex-direction: column;
+      padding: 8px 28px 7px;
       border-bottom: 1px solid var(--bd);
       flex-shrink: 0;
-      background: var(--bg)
+      background: var(--bg);
+      width: 100%;
+      box-sizing: border-box;
+    }
+    .tws-row1 {
+      display: flex;
+      align-items: center;
+      width: 100%;
+    }
+    .tws-row2 {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 8px;
+      margin-top: 6px;
+      width: 100%;
     }
 
     .sb2 {
@@ -808,12 +835,7 @@
       margin-right: 22px
     }
 
-    .sr {
-      margin-left: auto;
-      display: flex;
-      align-items: center;
-      gap: 8px
-    }
+
 
     .ip {
       font-family: var(--E);
@@ -821,15 +843,14 @@
       letter-spacing: .18em;
       text-transform: uppercase;
       color: var(--t3);
-      opacity: 0;
-      transition: opacity .3s;
-      display: flex;
+      display: none;
       align-items: center;
-      gap: 4px
+      gap: 4px;
+      transition: opacity .3s;
     }
 
     .ip.on {
-      opacity: 1
+      display: flex;
     }
 
     .idot {
@@ -2243,19 +2264,18 @@
         <div class="tw-main" id="twMain">
           <!-- Stats bar -->
           <div class="tws">
-            <div class="sb2"><span class="sv" id="stW">??</span><span class="sl">WPM</span></div>
-            <div class="sep"></div>
-            <div class="sb2"><span class="sv" id="stA">??</span><span class="sl">ACC</span></div>
-            <div class="sep"></div>
-            <div class="sb2"><span class="sv" id="stC">0</span><span class="sl">CHARS</span></div>
-            <div class="sep"></div>
-            <div class="sb2"><span class="sv" id="stT">0:00</span><span class="sl">TIME</span></div>
-            <div class="sr">
+            <div class="tws-row1">
+              <div class="sb2"><span class="sv" id="stW">??</span><span class="sl">WPM</span></div>
+              <div class="sep"></div>
+              <div class="sb2"><span class="sv" id="stA">??</span><span class="sl">ACC</span></div>
+              <div class="sep"></div>
+              <div class="sb2"><span class="sv" id="stC">0</span><span class="sl">CHARS</span></div>
+              <div class="sep"></div>
+              <div class="sb2"><span class="sv" id="stT">0:00</span><span class="sl">TIME</span></div>
+            </div>
+            <div class="tws-row2">
               <div class="ip" id="idlePill"><span class="idot"></span>Paused</div>
-              <!-- 523번 줄 바로 아래(Sound On 버튼 위)에 삽입 -->
-              <button class="chapter-toggle-btn" onclick="toggleSidebar()">
-                ☰ CHAPTERS
-              </button>
+              <button class="chapter-toggle-btn" onclick="toggleSidebar()">☰ CHAPTERS</button>
               <button class="snd on" id="sndBtn">Sound On</button>
               <button id="bCof" style="display:none;"></button>
             </div>
