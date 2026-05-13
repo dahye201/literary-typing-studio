@@ -83,14 +83,17 @@
       background: var(--bg);
       min-height: 100vh;
       font-family: var(--E);
-      color: var(--tx)
+      color: var(--tx);
+      overflow-x: hidden;
     }
 
     .app {
       min-height: 100vh;
       display: flex;
       flex-direction: column;
-      justify-content: space-between; /* ← 이 줄을 추가하세요! */
+      justify-content: space-between;
+      overflow-x: hidden;
+      width: 100%;
     }
 
     /* ── TOPBAR ── */
@@ -160,19 +163,47 @@
 
     @media(max-width:600px) {
       .top {
-        padding: 10px 14px
+        padding: 10px 14px;
+        flex-wrap: nowrap;
       }
 
       .tnav {
-        gap: 4px
+        gap: 4px;
+        flex-shrink: 0;
       }
 
       .tbtn {
         width: 58px;
         font-size: 8px;
         letter-spacing: .06em;
-        padding: 5px 0
+        padding: 5px 0;
       }
+
+      /* 라이브러리 카드 모바일 */
+      .bkl { padding: 16px 14px; }
+      .bksd { flex-shrink: 0; }
+
+      /* 종이 모바일 */
+      .mw { padding: 4px 8px 0; }
+      .pp { padding: 14px 16px 16px; }
+
+      /* 타이핑 디스플레이 */
+      .typing-display { font-size: 13px; line-height: 1.9; }
+
+      /* stats bar */
+      .tws {
+        padding: 7px 10px;
+        flex-wrap: wrap;
+        gap: 4px 0;
+      }
+      .sb2 { margin-right: 10px; }
+      .sv  { font-size: 16px; }
+      .sep { margin-right: 10px; height: 22px; }
+      .sr  { gap: 5px; }
+      .chapter-toggle-btn { width: 82px; font-size: 8px; padding: 4px 0; }
+      .snd { width: 74px; font-size: 8px; padding: 4px 0; }
+      .ip  { display: none; }
+      .pnb { padding: 6px 10px; }
 
       .logo {
         font-size: 9px;
@@ -2205,12 +2236,7 @@
           </div><!-- /.sb-head -->
           <!-- Chapter rows injected here by JS -->
           <div class="sb-list" id="sbList"></div>
-          <div class="sb-nav-mobile">
-            <hr>
-            <div onclick="location.href='/progress'"> Progress</div>
-            <div onclick="location.href='/support'"> Support</div>
-            <div onclick="openOv('ovL')" style="cursor:pointer"> Sign In</div>
-          </div>
+
         </aside>
 
         <!-- ── RIGHT: main typing area ── -->
