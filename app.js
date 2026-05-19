@@ -1105,7 +1105,8 @@ async function checkLoginStatus() {
 const stripe = Stripe('pk_test_51TPODEPxBQOBPm3AlcMjDkTActaPiasB0BDR3O58FrM6ujeMRWAbHwPs1Vr8QYUY3BUIvrwj4htCCWF4yCbqqYj500I2kHr8S7');
 
 async function checkout() {
-  if (!currentUser) {
+  const { data: { session } } = await _supabase.auth.getSession();
+  if (!session) {
     closeOv('ovP');
     openOv('ovL');
     return;
@@ -1131,7 +1132,7 @@ function updateNavForUser(user) {
       const initial = user.email.charAt(0).toUpperCase();
       bProg.style.display = 'none';
       bSI.textContent = 'Logout';
-      bSI.style.display = 'flex';
+      bSI.style.display = 'inline-block';
       bSI.onclick = async () => {
           await _supabase.auth.signOut();
           location.reload();
