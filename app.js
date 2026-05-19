@@ -1118,17 +1118,7 @@ async function checkout() {
     
 
 /* --- 로그인 및 인증 로직 추가 --- */
-
-// 1. 로그인/로그아웃 버튼 클릭 이벤트
-document.getElementById('loginBtn')?.addEventListener('click', async () => {
-  const { data, error } = await _supabase.auth.signInWithOAuth({
-      provider: 'google',
-      options: {
-          redirectTo: window.location.origin
-      }
-  });
-  if (error) console.error("로그인 에러:", error.message);
-});
+// loginBtn의 onclick은 HTML에서 signInWithGoogle()로 이미 연결되어 있어 addEventListener 중복 제거
 
 /* ── 아바타 UI 업데이트 ── */
 function updateNavForUser(user) {
